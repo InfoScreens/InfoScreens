@@ -24,7 +24,6 @@ body{
     width: 100%;
     height: 200px;
     margin: 5px;
-    border-top: 2px solid #900;
     overflow: hidden;
     z-index: 50;
 }
@@ -42,4 +41,23 @@ body{
     margin: 10px 10px 0 10px;
     background: #CCC;
     float: left;
+}
+
+.work-area{
+	position:relative;
+}
+
+.element{
+	position:relative;
+	height: 130px;
+	width: 180px;
+	border:1px solid black;
+	border-radius:5px;
+	float:left;
+	margin:5px;
+}
+
+.add-element{
+	background:url('../img/add-elem.png')  center no-repeat;
+	background-size: contain;
 }
