@@ -5,8 +5,10 @@
 	<meta charset="utf8">
 	<link type="text/css" rel="stylesheet" href="script/bootstrap-3.3.6-dist/css/bootstrap.css">
 	<link type="text/css" rel="stylesheet" href="css/style.css">
-
 	<link href="script/vis/dist/vis.css" rel="stylesheet" type="text/css" />
+
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
 
 </head>
 <body>
@@ -17,8 +19,12 @@
 			<option> Mon 1 </option>
 			<option> Mon 2 </option>
 		</select>
-		<button>Дата</button>
-		<input id="year" name="year" type="date"/>
+		<div class='input-group date' id='datetimepicker1'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
 
 	</div>
 
@@ -45,5 +51,13 @@
 	
 	<script src="script/vis/dist/vis.js"></script>
 	<script src="script/script.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+			<script src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
+
+	<script type="text/javascript">
+            $(function () {
+                $('#datetimepicker1').datetimepicker();
+            });
+        </script>
 </body>
 </html>
