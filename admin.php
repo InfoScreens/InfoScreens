@@ -26,7 +26,7 @@
                     </span>
                 </div>
 
-	</div>
+	  </div>
 
 	<div class="col-lg-8 work-area">
 		<h3>Work area</h3>
@@ -35,15 +35,31 @@
 		<div class="element add-element"></div>
 
 
+	  </div>
+
+	<div id="context-menu" class="context-menu">
+	    <ul class="context-menu__items">
+	      <li class="context-menu__item">
+	        <a href="#" class="context-menu__link" data-action="View"><i class="fa fa-eye"></i> View Task</a>
+	      </li>
+	      <li class="context-menu__item">
+	        <a href="#" class="context-menu__link" data-action="Edit"><i class="fa fa-edit"></i> Edit Task</a>
+	      </li>
+	      <li class="context-menu__item">
+	        <a href="#" class="context-menu__link" data-action="Delete"><i class="fa fa-times"></i> Delete Task</a>
+	      </li>
+	    </ul>
+	  </div>
+
 	</div>
-	</div>
+
 	<div class="row">
 		<div class="col-lg-12">
 			<div id="timeline">
 				
-			</div>
-		</div>
-	</div>
+			  </div>
+		  </div>
+	  </div>
 
 
 	<script src="script/jquery-2.2.4.min.js"></script>
@@ -59,5 +75,7 @@
                 $('#datetimepicker1').datetimepicker();
             });
         </script>
+
+
 </body>
 </html>
