@@ -1,5 +1,5 @@
 <?php
 
-header("Location: admin.php");
+header("Location: login.php");
 
 ?>

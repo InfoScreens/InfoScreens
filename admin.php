@@ -1,3 +1,23 @@
+<?php
+
+$email = $_POST['email'];
+$password = $_POST['password'];
+
+
+include "db_connect.php";
+$sql_query = "SELECT * FROM 'users' WHERE 'email' = '".$email."'";
+$result = mysql_query($sql_query);
+while($user = mysql_fetch_array($result)){
+	if(sha1(sha1($password)."siloponni") != $user['password']){
+		header("Location: login.php");
+	}
+}
+
+
+?>
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,6 +33,9 @@
 
 </head>
 <body>
+<?php
+//echo sha1(sha1("4815162342")."siloponni");
+?>
 	<div class="row">
 	<div class="col-lg-3 action-panel">
 		<h3>Action panel</h3>
