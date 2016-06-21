@@ -5,7 +5,7 @@ var container = document.getElementById("timeline");
 
   // Create a DataSet (allows two way data-binding)
   var items = new vis.DataSet([
-    {id: 1, content: 'A', start: '2015-02-09T04:00:00'},
+    {id: 1, content: 'A',  start: '2015-02-09T04:00:00'},
     {id: 2, content: 'B', start: '2015-02-09T14:00:00'},
     {id: 3, content: 'C', start: '2015-02-09T16:00:00'},
     {id: 4, content: 'D', start: '2015-02-09T17:00:00'},
@@ -270,6 +270,72 @@ var container = document.getElementById("timeline");
   initContextMenu();
 
 
-
-
 //------end of add elements
+
+
+//------schedule upload
+
+function uploadSchedule(lol){
+  alert("ok");
+}
+
+
+
+
+$("#date").on("edit", function(e){
+  //uploadSchedule($("#date").val());
+console.log("change");
+  alert("date was changed");
+})  //*/
+
+/*
+document.getElementById("monSelect").addEventListener("change", function(e){
+  //uploadSchedule($("#monSelect").val());
+  alert("monitor was changed");
+})//*/
+
+
+
+
+
+//------end of schedule upload
+
+//------add files
+
+$("#addVideoBtn").click(function(){
+  $("#addFile").trigger("click");
+})
+
+var files;
+$("#addFiles").change(function(e){
+  var files = this.files;
+
+  e.stopPropagation();
+  e.preventDefault();
+  var data = new FormData();
+  $.each(files, function(key, value){
+    data.append(key, value);
+  });
+  console.log(data);
+  $.ajax({
+    url:'../action.php?uploadfiles',
+    method:'POST',
+    data:data,
+    cache:false,
+    dataType:'text',
+    processData:false,
+    contentType:false,
+    success:function(respond, textStatus, jqXHR){
+      console.log(respond);
+    },
+    error:function(jqXHR, textStatus, errorThrown){
+
+    }
+  })
+
+})
+
+
+
+
+//------end of add files

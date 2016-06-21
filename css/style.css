@@ -62,6 +62,10 @@ body{
 	background-size: contain;
 }
 
+#addFiles{
+  display:none;
+}
+
 
 
 /* context menu */
@@ -101,6 +105,7 @@ body{
   padding: 4px 12px;
   color: #0066aa;
   text-decoration: none;
+  font-size:1.5em;
 }
 
 .context-menu__link:hover {
