@@ -312,11 +312,14 @@ $("#addFiles").change(function(e){
 
   e.stopPropagation();
   e.preventDefault();
-  var data = new FormData();
+  var form = document.getElementById("addFiles");
+  var data = new FormData(form);
+  console.log(data);
+  /*
   $.each(files, function(key, value){
     data.append(key, value);
-  });
-  console.log(data);
+  });//*/
+  //console.log(data);
   $.ajax({
     url:'../action.php?uploadfiles',
     method:'POST',

@@ -1,5 +1,16 @@
 
-
+<?php
+$email = $_POST['email'];
+$password = $_POST['password'];
+include "db_connect.php";
+$sql_query = "SELECT * FROM 'users' WHERE 'email' = '".$email."'";
+$result = mysql_query($sql_query);
+while($user = mysql_fetch_array($result)){
+	if(sha1(sha1($password)."siloponni") != $user['password']){
+		header("Location: login.php");
+	}
+}
+?>
 
 <!DOCTYPE html>
 <html>
@@ -46,8 +57,8 @@
 		<div class="element"></div>
 		<div class="element add-element"></div>
 
-		<form id="addFiles">
-			<input type="file" multiple="multiple" id="addFile">
+		<form id="addFiles" name="addFiles">
+			<input type="file" multiple="multiple" id="addFile" name="file">
 			</form>
 
 
