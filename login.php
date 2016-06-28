@@ -1,15 +1,46 @@
 <?php
-session_start();
-if(!isset($_SESSION['count'])){
-	$_SESSION['count'] = 0;
-}else{
-	$_SESSION['count']++;
+
+include_once ("auth.php");
+include_once ("utils.php");
+
+abstract class LOGIN_PAGE_ERROR {
+	const OK = 0;
+	const EMPTY_PASSWORD = 1;
+	const AUTHORIZATION_FAILED = 2;
 }
 
+$is_post = $_SERVER["REQUEST_METHOD"] == "POST";
 
+$error = $is_post || !isset ($_GET["error"]) ? LOGIN_PAGE_ERROR::OK : $_GET["error"];
+
+$is_authorized = $auth->is_authorized ();
+
+$t_params = $is_post ? $_POST : $_GET;
+$p_email = isset ($t_params["email"]) ? $t_params["email"] : "";
+
+if (!$is_authorized && $is_post) {
+
+	$p_password = isset ($_POST["password"]) ? $_POST["password"] : "";
+
+	if (strlen ($p_password) == 0) {
+		$error = LOGIN_PAGE_ERROR::EMPTY_PASSWORD;
+	}
+
+	if ($error == LOGIN_PAGE_ERROR::OK) {
+		$is_authorized = $auth->authorize ($p_email, $p_password);
+		if (!$is_authorized) {
+			$error = LOGIN_PAGE_ERROR::AUTHORIZATION_FAILED;
+		}
+	}
+}
+
+if ($is_authorized) {
+	$utils->redirect ("/admin.php");
+} else  {
+	if ($is_post) {
+		$utils->redirect ("/login.php?error=".$utils->escape_url ($error)."&email=".$utils->escape_url ($p_email));
+	} else {
 ?>
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,19 +61,30 @@ if(!isset($_SESSION['count'])){
 				<h4 class="text-center">Log in</h4>
 			</div>
 			<div class="modal-body panel-body">
-				<form action="admin.php" method="POST" role="form">
+				<?php
+		if ($error == LOGIN_PAGE_ERROR::AUTHORIZATION_FAILED) {
+				?>
+				<div class="alert alert-danger">Authorization failed</div>
+				<?php
+		}
+				?>
+				<form action="login.php" method="POST" role="form">
 					<div class="form-group">
 						<label for="email">Email:</label>
-						<input type="email" class="form-control" name="email" id="email">
+						<input type="email" class="form-control" name="email" id="email" value="<?php echo $utils->escape_html ($p_email); ?>">
 					</div>
 					<div class="form-group">
 						<label for="password">Password:</label>
 						<input type="password" class="form-control" name="password" id="password">
 					</div>
 					<button type="submit" class="btn btn-primary">Login</button>
-				</div>
+				</form>
 			</div>
 		</div>
 	</div>
 </body>
 </html>
+<?php
+
+	}
+}

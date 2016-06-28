@@ -1,6 +1,20 @@
+<?php
 
+include_once ("auth.php");
+include_once ("users.php");
+include_once ("utils.php");
 
+$is_authorized = $auth->is_authorized ();
 
+if (!$is_authorized) {
+
+	$utils->redirect ("/login.php");
+
+} else {
+
+	$user_info = $users->get_info ($auth->get_authorized_id ());
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,6 +51,17 @@
                     </span>
                 </div>
         <button type="button" class="btn btn-default" style="width:100%;">Загрузить программу</button>
+		<div class="well well-sm">
+			<div class="form-group">
+				<strong><?php echo $utils->escape_html ($user_info["name"]." ".$user_info["surname"]); ?></strong>
+			</div>
+			<div class="form-group">
+				<i><?php echo $utils->escape_html ($user_info["email"]); ?></i>
+			</div>
+			<div class="form-group">
+				<a href="/logout.php" class="btn btn-default">Log out</a>
+			</div>
+		</div>
 
 	  </div>
 
@@ -104,3 +129,6 @@
 
 </body>
 </html>
+<?php
+
+}
