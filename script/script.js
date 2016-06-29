@@ -314,11 +314,6 @@ $("#addFiles").change(function(e){
   e.preventDefault();
   var form = document.getElementById("addFiles");
   var data = new FormData(form);
-  console.log(data);
-  /*
-  $.each(files, function(key, value){
-    data.append(key, value);
-  });//*/
   //console.log(data);
   $.ajax({
     url:'../action.php?uploadfiles',
@@ -329,10 +324,15 @@ $("#addFiles").change(function(e){
     processData:false,
     contentType:false,
     success:function(respond, textStatus, jqXHR){
-      console.log(respond);
+      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+      /*
+      $("#add-element").before(function(){
+        //return '<div class="element"></div>';
+      })
+      console.log(respond);*/
     },
     error:function(jqXHR, textStatus, errorThrown){
-
+      console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
     }
   })
 
