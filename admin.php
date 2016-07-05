@@ -5,11 +5,12 @@ $password = $_POST['password'];
 include "db_connect.php";
 $sql_query = "SELECT * FROM 'users' WHERE 'email' = '".$email."'";
 $result = mysql_query($sql_query);
-while($user = mysql_fetch_array($result)){
+while($user = mysql_fetch_assoc($result)){
 	if(sha1(sha1($password)."siloponni") != $user['password']){
 		header("Location: login.php");
 	}
 }
+mysql_close($db);
 ?>
 
 <!DOCTYPE html>
@@ -54,7 +55,7 @@ while($user = mysql_fetch_array($result)){
 	<div class="col-lg-8 work-area">
 		<h3>Work area</h3>
 
-		<div class="element"></div>
+		<!--<div class="element"></div>-->
 		<div class="element add-element"></div>
 
 		<form id="addFiles" name="addFiles">
@@ -105,13 +106,18 @@ while($user = mysql_fetch_array($result)){
 	<script type="text/javascript">
             $(function () {
                 $('#datetimepicker').datetimepicker({
-                	format:'DD.MM.YYYY'
+                	format:'DD.MM.YYYY',
+                	defaultDate: date
                 });
                 $('.selectpicker').selectpicker();
             });
         </script>
     
 	<script src="script/script.js"></script>
+	<script>
+	
+
+	</script>
 
 </body>
 </html>

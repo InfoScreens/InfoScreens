@@ -1,6 +1,8 @@
 #folder "test"
 test
 files
+script/anythumbnailer
+script/thumbnailer
 
 #tilde files
 *~
