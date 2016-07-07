@@ -62,6 +62,22 @@ if (!$is_authorized) {
 				<a href="/logout.php" class="btn btn-default">Log out</a>
 			</div>
 		</div>
+		<?php
+
+	if ($user_info["is_admin"]) {
+
+		?><div class="well well-sm">
+			<div class="form-group">
+				<strong>Admin</strong>
+			</div>
+			<div class="form-group">
+				<a href="/users_list.php" class="btn btn-default">Manage users</a>
+			</div>
+		</div><?php
+
+	}
+
+		?>
 
 	  </div>
 

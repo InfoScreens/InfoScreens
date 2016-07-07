@@ -73,6 +73,24 @@ class Auth {
 	private function make_token () {
 		return base64_encode (openssl_random_pseudo_bytes (30));
 	}
+
+	public function set_user_credentials ($user_id, $email, $password) {
+
+		include_once ("db_connect.php");
+
+		global $utils;
+
+		$escaped_email = $utils->escape_sql ($email);
+		$password_hash = $this->hash_password ($password);
+		$escaped_password_hash = $utils->escape_sql ($password_hash);
+
+		mysql_query (
+			sprintf (
+				"UPDATE `users` SET `email` = '%s', `password` = '%s' WHERE `userId` = %d;",
+				$escaped_email, $escaped_password_hash, $user_id
+			)
+		);
+	}
 }
 $auth = new Auth ();
 
