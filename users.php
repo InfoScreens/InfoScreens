@@ -1,6 +1,7 @@
 <?php
 
 include_once ("utils.php");
+include_once ("x.php");
 
 class Users {
 	public function get_info ($id) {
@@ -29,6 +30,26 @@ class Users {
 
 		global $utils, $auth;
 
+		$result = $utils->check_email ($email);
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		$result = $auth->check_password ($password);
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		$result = $this->check_name ($name);
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		$result = $this->check_surname ($surname);
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		$escaped_email = $utils->escape_sql ($email);
 		$escaped_name = $utils->escape_sql ($name);
 		$escaped_surname = $utils->escape_sql ($surname);
@@ -41,14 +62,18 @@ class Users {
 				$escaped_email, $escaped_name, $escaped_surname, $permissions
 			)
 		);
-
-		if ($result) {
-
-			$user_id = mysql_insert_id ();
-
-			$auth->set_user_credentials ($user_id, $email, $password);
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
 		}
-		return $result;
+
+		$user_id = mysql_insert_id ();
+
+		$result = $auth->set_user_credentials ($user_id, $email, $password);
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		return new Response ($user_id);
 	}
 
 	public function set_info ($id, $key, $value) {
@@ -103,6 +128,24 @@ class Users {
 			"is_admin" => $row["permissions"] == "1",
 			"id" => $row["userId"]
 		);
+	}
+
+	public function check_name ($name) {
+
+		if (strlen ($name) <= 0) {
+			return new Response (null, Errors::NAME_IS_EMPTY);
+		}
+
+		return new Response (null);
+	}
+
+	public function check_surname ($surname) {
+
+		if (strlen ($surname) <= 0) {
+			return new Response (null, Errors::SURNAME_IS_EMPTY);
+		}
+
+		return new Response (null);
 	}
 }
 

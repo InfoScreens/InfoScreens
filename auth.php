@@ -1,10 +1,12 @@
 <?php
 
 include_once ("utils.php");
+include_once ("x.php");
 
 class Auth {
 
 	const STATIC_SALT = "siloponni";
+	const MIN_PASSWORD_LENGTH = 8;
 
 	public function __construct () {
 		$this->session_started = FALSE;
@@ -80,16 +82,40 @@ class Auth {
 
 		global $utils;
 
+		$result = $utils->check_email ($email);
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		$result = $this->check_password ($password);
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		$escaped_email = $utils->escape_sql ($email);
 		$password_hash = $this->hash_password ($password);
 		$escaped_password_hash = $utils->escape_sql ($password_hash);
 
-		mysql_query (
+		$result = mysql_query (
 			sprintf (
 				"UPDATE `users` SET `email` = '%s', `password` = '%s' WHERE `userId` = %d;",
 				$escaped_email, $escaped_password_hash, $user_id
 			)
 		);
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
+		return new Response (null);
+	}
+
+	public function check_password ($password) {
+
+		if (strlen ($password) < Auth::MIN_PASSWORD_LENGTH) {
+			return new Response (null, Errors::PASSWORD_TOO_SHORT);
+		}
+
+		return new Response (null);
 	}
 }
 $auth = new Auth ();

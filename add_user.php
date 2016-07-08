@@ -28,6 +28,7 @@ if ($is_post) {
 	$surname = isset ($_POST["surname"]) ? $_POST["surname"] : "";
 	$is_admin = isset ($_POST["is_admin"]) ? $_POST["is_admin"] : "0";
 
+	/* TODO: handle errors */
 	$users->create ($email, $password, $name, $surname, $is_admin);
 
 	$utils->redirect ("/users_list.php");
