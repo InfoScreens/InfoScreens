@@ -1,3 +1,61 @@
+//------get time
+
+function getTime(p){
+  
+  var d = new Date();
+  var year = d.getFullYear();
+  var month = d.getMonth()+1 < 10 ? '0'+(d.getMonth()+1) : d.getMonth()+1;
+  var date = d.getDate() < 10 ? '0'+d.getDate() : d.getDate();
+  var hour = d.getHours() < 10 ? '0'+d.getHours() : d.getHours();
+  var min = d.getMinutes() < 10 ? '0'+d.getMinutes() : d.getMinutes();
+  var sec = d.getSeconds() < 10 ? '0'+d.getSeconds() : d.getSeconds();
+  if(p == 'now'){
+    return year+'-'+month+'-'+date+'T'+hour+':'+min+':'+sec; 
+  }
+  if(p == 'start' || p == 'min'){
+    return year+'-'+month+'-'+date;
+  }
+  if(p == 'workDate'){
+    var workDate = $("#date").val();
+    var workDay = workDate.substring(0,2);
+    var workMonth = workDate.substring(3,5);
+    var workYear = workDate.substring(6);
+    return workYear+'-'+workMonth+'-'+workDay+'T12:00:00';
+  }
+   if(p == "+3"){
+    return workYear+'-'+workMonth+'-'+workDay+'T15:00:00';
+  }
+
+
+  if(p == 'end'){
+    var a = new Date();
+    a.setDate(a.getDate()+1);
+    year = a.getFullYear();
+    month = a.getMonth()+1 < 10 ? '0'+(a.getMonth()+1) : a.getMonth()+1;
+    date = a.getDate() < 10 ? '0'+a.getDate() : a.getDate();
+    return year+'-'+month+'-'+date;
+  }//*/
+
+
+  return 0;
+}
+
+
+//------schedule saving
+
+function updateSchedule(){
+  items.getIds();
+  console.log("update schedule");
+  var ids = items.Ids();
+
+}
+
+function addItems(){
+  console.log("add items");
+}
+
+
+
 //------timeline script
 
 var container = document.getElementById("timeline");
@@ -5,22 +63,42 @@ var container = document.getElementById("timeline");
 
   // Create a DataSet (allows two way data-binding)
   var items = new vis.DataSet([
-    {id: 1, content: 'A',  start: '2015-02-09T04:00:00'},
-    {id: 2, content: 'B', start: '2015-02-09T14:00:00'},
-    {id: 3, content: 'C', start: '2015-02-09T16:00:00'},
-    {id: 4, content: 'D', start: '2015-02-09T17:00:00'},
-    {id: 5, content: 'E', start: '2015-02-10T03:00:00'}
+    //{id: 1, content: 'A', editable: true,  start: '2016-07-07', end:'2016-07-08'}
   ]);
+
+
 
   // Configuration for the Timeline
   var options = {
     editable: true,
+    min: getTime('min'),
+    start: getTime('start'),
+    end: getTime('end'),
+    minHeight: '200px',
 
+    onAdd: function(item, callback){
+      console.log("adding");
+    },
+
+    onMove: function(item, callback){
+      console.log("moved");
+    }, 
+
+    onMoving: function(item, callback){
+      console.log("moving");
+    }, 
+
+    onUpdate: function(item, callback){
+      console.log("update");
+    }
+
+    /*
     // always snap to full hours, independent of the scale
     snap: function (date, scale, step) {
       var hour = 60 * 60 * 1000;
       return Math.round(date / hour) * hour;
-    }
+    }*/
+
 
     // to configure no snapping at all:
     //
@@ -35,6 +113,7 @@ var container = document.getElementById("timeline");
 
   // Create a Timeline
   var timeline = new vis.Timeline(container, items, options);
+
 
 
 
@@ -288,11 +367,7 @@ console.log("change");
   alert("date was changed");
 })  //*/
 
-/*
-document.getElementById("monSelect").addEventListener("change", function(e){
-  //uploadSchedule($("#monSelect").val());
-  alert("monitor was changed");
-})//*/
+
 
 
 
@@ -301,6 +376,25 @@ document.getElementById("monSelect").addEventListener("change", function(e){
 //------end of schedule upload
 
 //------add files
+
+function addClass(type){
+  switch(type){
+    case "image/png": return "png";
+    break;
+    case "image/jpeg": return "jpeg";
+    break;
+    case "video/mp4": return "video";
+    break;
+    case "application/pdf": return "pdf";
+    break;
+    case "video/quicktime": return "video";
+    break;
+    case "text/plain": return "text";
+    break;
+
+    default: return "unknownType";
+  }
+}
 
 $("#addVideoBtn").click(function(){
   $("#addFile").trigger("click");
@@ -312,11 +406,12 @@ $("#addFiles").change(function(e){
 
   e.stopPropagation();
   e.preventDefault();
-  var data = new FormData();
-  $.each(files, function(key, value){
-    data.append(key, value);
-  });
-  console.log(data);
+  var form = document.getElementById("addFiles");
+  var data = new FormData(form);
+  data.append("mon", $("#monSelect").val());
+  data.append("date", $("#date").val());
+
+  //console.log(data);
   $.ajax({
     url:'../action.php?uploadfiles',
     method:'POST',
@@ -326,10 +421,23 @@ $("#addFiles").change(function(e){
     processData:false,
     contentType:false,
     success:function(respond, textStatus, jqXHR){
-      console.log(respond);
+      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+      
+      var element = $.parseJSON(respond);
+      //console.log(element);
+      $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
+      items.add([
+        {id:element["fileId"], content: element["fileName"], editable:true, start: getTime("workDate")}
+        ]);
+      
+      
+      //var ids = timeline.getIds();
+      //console.log(ids);
+      //*/
+      
     },
     error:function(jqXHR, textStatus, errorThrown){
-
+      console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
     }
   })
 

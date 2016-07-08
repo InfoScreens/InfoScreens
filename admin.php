@@ -84,11 +84,12 @@ if (!$is_authorized) {
 	<div class="col-lg-8 work-area">
 		<h3>Work area</h3>
 
-		<div class="element"></div>
+		<!--<div class="element"></div>-->
+		<div class="element pdf" data-title="Имя файла" style=""><img src="files/thumbnails/pres.pdf.jpg"></div>
 		<div class="element add-element"></div>
 
-		<form id="addFiles">
-			<input type="file" multiple="multiple" id="addFile">
+		<form id="addFiles" name="addFiles">
+			<input type="file" multiple="multiple" id="addFile" name="file">
 			</form>
 
 
@@ -135,13 +136,18 @@ if (!$is_authorized) {
 	<script type="text/javascript">
             $(function () {
                 $('#datetimepicker').datetimepicker({
-                	format:'DD.MM.YYYY'
+                	format:'DD.MM.YYYY',
+                	defaultDate: date
                 });
                 $('.selectpicker').selectpicker();
             });
         </script>
     
 	<script src="script/script.js"></script>
+	<script>
+	
+
+	</script>
 
 </body>
 </html>
