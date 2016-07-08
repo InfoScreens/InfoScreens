@@ -39,7 +39,7 @@ $users = $users->get_list ();
 ?><!DOCTYPE html>
 <html>
 <head>
-	<title>User list</title>
+	<title>Add user</title>
 	<meta charset="utf8">
 	<link type="text/css" rel="stylesheet" href="script/bootstrap-3.3.6-dist/css/bootstrap.css">
 	<link type="text/css" rel="stylesheet" href="css/style.css">
