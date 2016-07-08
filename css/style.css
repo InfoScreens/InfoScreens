@@ -49,12 +49,22 @@ body{
 
 .element{
 	position:relative;
-	height: 100px;
+	height: 95px;
 	width: 130px;
-	//border:1px solid black;
+	border:1px solid black;
 	border-radius:5px;
 	float:left;
 	margin:5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.element img{
+  max-height:100%;
+  max-width:100%;
+  display:block;
+  text-align:center;
 }
 
 .jpeg{

@@ -1,8 +1,5 @@
 //------get time
 
-
-
-
 function getTime(p){
   
   var d = new Date();
@@ -25,6 +22,10 @@ function getTime(p){
     var workYear = workDate.substring(6);
     return workYear+'-'+workMonth+'-'+workDay+'T12:00:00';
   }
+   if(p == "+3"){
+    return workYear+'-'+workMonth+'-'+workDay+'T15:00:00';
+  }
+
 
   if(p == 'end'){
     var a = new Date();
@@ -34,7 +35,23 @@ function getTime(p){
     date = a.getDate() < 10 ? '0'+a.getDate() : a.getDate();
     return year+'-'+month+'-'+date;
   }//*/
+
+
   return 0;
+}
+
+
+//------schedule saving
+
+function updateSchedule(){
+  items.getIds();
+  console.log("update schedule");
+  var ids = items.Ids();
+
+}
+
+function addItems(){
+  console.log("add items");
 }
 
 
@@ -46,12 +63,10 @@ var container = document.getElementById("timeline");
 
   // Create a DataSet (allows two way data-binding)
   var items = new vis.DataSet([
-    //{id: 1, content: 'A',  start: getTime('now')}
+    //{id: 1, content: 'A', editable: true,  start: '2016-07-07', end:'2016-07-08'}
   ]);
 
-  var newEnd = {
-    end: "2017-05-05"
-  }
+
 
   // Configuration for the Timeline
   var options = {
@@ -61,11 +76,29 @@ var container = document.getElementById("timeline");
     end: getTime('end'),
     minHeight: '200px',
 
+    onAdd: function(item, callback){
+      console.log("adding");
+    },
+
+    onMove: function(item, callback){
+      console.log("moved");
+    }, 
+
+    onMoving: function(item, callback){
+      console.log("moving");
+    }, 
+
+    onUpdate: function(item, callback){
+      console.log("update");
+    }
+
+    /*
     // always snap to full hours, independent of the scale
     snap: function (date, scale, step) {
       var hour = 60 * 60 * 1000;
       return Math.round(date / hour) * hour;
-    }
+    }*/
+
 
     // to configure no snapping at all:
     //
@@ -80,6 +113,7 @@ var container = document.getElementById("timeline");
 
   // Create a Timeline
   var timeline = new vis.Timeline(container, items, options);
+
 
 
 
@@ -390,10 +424,10 @@ $("#addFiles").change(function(e){
       console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
       
       var element = $.parseJSON(respond);
-      console.log(element);
-      $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"> </div>');
+      //console.log(element);
+      $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
       items.add([
-        {id:element["fileId"], content: element["fileName"], start: getTime("workDate")}
+        {id:element["fileId"], content: element["fileName"], editable:true, start: getTime("workDate")}
         ]);
       
       

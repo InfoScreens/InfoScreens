@@ -56,6 +56,7 @@ mysql_close($db);
 		<h3>Work area</h3>
 
 		<!--<div class="element"></div>-->
+		<div class="element pdf" data-title="Имя файла" style=""><img src="files/thumbnails/pres.pdf.jpg"></div>
 		<div class="element add-element"></div>
 
 		<form id="addFiles" name="addFiles">
