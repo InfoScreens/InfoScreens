@@ -1,18 +1,20 @@
-
 <?php
-$email = $_POST['email'];
-$password = $_POST['password'];
-include "db_connect.php";
-$sql_query = "SELECT * FROM 'users' WHERE 'email' = '".$email."'";
-$result = mysql_query($sql_query);
-while($user = mysql_fetch_assoc($result)){
-	if(sha1(sha1($password)."siloponni") != $user['password']){
-		header("Location: login.php");
-	}
-}
-mysql_close($db);
-?>
 
+include_once ("auth.php");
+include_once ("users.php");
+include_once ("utils.php");
+
+$is_authorized = $auth->is_authorized ();
+
+if (!$is_authorized) {
+
+	$utils->redirect ("/login.php");
+
+} else {
+
+	$user_info = $users->get_info ($auth->get_authorized_id ());
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -49,6 +51,33 @@ mysql_close($db);
                     </span>
                 </div>
         <button type="button" class="btn btn-default" style="width:100%;">Загрузить программу</button>
+		<div class="well well-sm">
+			<div class="form-group">
+				<strong><?php echo $utils->escape_html ($user_info["name"]." ".$user_info["surname"]); ?></strong>
+			</div>
+			<div class="form-group">
+				<i><?php echo $utils->escape_html ($user_info["email"]); ?></i>
+			</div>
+			<div class="form-group">
+				<a href="/logout.php" class="btn btn-default">Log out</a>
+			</div>
+		</div>
+		<?php
+
+	if ($user_info["is_admin"]) {
+
+		?><div class="well well-sm">
+			<div class="form-group">
+				<strong>Admin</strong>
+			</div>
+			<div class="form-group">
+				<a href="/users_list.php" class="btn btn-default">Manage users</a>
+			</div>
+		</div><?php
+
+	}
+
+		?>
 
 	  </div>
 
@@ -122,3 +151,6 @@ mysql_close($db);
 
 </body>
 </html>
+<?php
+
+}
