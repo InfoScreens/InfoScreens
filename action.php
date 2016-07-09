@@ -63,7 +63,75 @@ if(isset($_GET['uploadfiles'])){
 
 }//*/
 
+include_once ("users.php");
 
+/**
+ * Extract action parameters from POST request parameters
+ *
+ * @param	$keys_and_default_values	associative array of requested keys (as keys) associated default values (as values)
+ * @return								associative array with requested keys (as keys) and associated values or default values
+ */
+function get_action_parameters ($keys_and_default_values) {
+
+	global $_POST;
+
+	// parse json from POST request parameters
+	try {
+		$parameters = json_decode ($_POST["params"]);
+	} catch (Exception $exception) {
+		$parameters = array ();
+	}
+
+	$result = array ();
+	// set values for keys found in POST request parameters
+	foreach ($parameters as $key => $value) {
+		if (array_key_exists ($key, $keys_and_default_values)) {
+			$result[$key] = $value;
+		}
+	}
+	// set default values for keys not found in POST request parameters
+	foreach ($keys_and_default_values as $key => $value) {
+		if (!array_key_exists ($key, $result)) {
+			$result[$key] = $value;
+		}
+	}
+	return $result;
+}
+
+if (isset ($_POST["action"])) {
+
+	$action = $_POST["action"];
+
+	// handle requested action
+	switch ($action) {
+		case "create_user":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"email" => "",
+					"password" => "",
+					"name" => "",
+					"surname" => "",
+					"is_admin" => 0
+				)
+			);
+			// create user
+			$response = $users->create (
+				$parameters["email"],
+				$parameters["password"],
+				$parameters["name"],
+				$parameters["surname"],
+				$parameters["is_admin"]
+			);
+			break;
+		default:
+			$response = new Response (Errors::UNKNOWN_ACTION);
+	}
+
+	// send back result in json
+	header ("Content-Type: application/json");
+	echo $response->to_json ();
+}
 
 
 

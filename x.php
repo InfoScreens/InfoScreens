@@ -7,6 +7,8 @@ abstract class Errors {
 	const PASSWORD_TOO_SHORT = 3;
 	const NAME_IS_EMPTY = 4;
 	const SURNAME_IS_EMPTY = 5;
+	const AJAX_ERROR = 6;
+	const UNKNOWN_ACTION = 7;
 }
 
 class Response {

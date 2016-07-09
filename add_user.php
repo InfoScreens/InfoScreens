@@ -12,30 +12,15 @@ if (!$is_authorized) {
 
 } else {
 
-$user_info = $users->get_info ($auth->get_authorized_id ());
+	$user_info = $users->get_info ($auth->get_authorized_id ());
 
-if (!$user_info["is_admin"]) {
-	$utils->redirect ("/admin.php");
-} else {
+	if (!$user_info["is_admin"]) {
 
-$is_post = $_SERVER["REQUEST_METHOD"] == "POST";
+		$utils->redirect ("/admin.php");
 
-if ($is_post) {
+	} else {
 
-	$email = isset ($_POST["email"]) ? $_POST["email"] : "";
-	$password = isset ($_POST["password"]) ? $_POST["password"] : "";
-	$name = isset ($_POST["name"]) ? $_POST["name"] : "";
-	$surname = isset ($_POST["surname"]) ? $_POST["surname"] : "";
-	$is_admin = isset ($_POST["is_admin"]) ? $_POST["is_admin"] : "0";
-
-	/* TODO: handle errors */
-	$users->create ($email, $password, $name, $surname, $is_admin);
-
-	$utils->redirect ("/users_list.php");
-
-} else {
-
-$users = $users->get_list ();
+		$users = $users->get_list ();
 
 ?><!DOCTYPE html>
 <html>
@@ -59,7 +44,10 @@ $users = $users->get_list ();
 
 	<div class="form-group">
 
-		<form action="add_user.php" method="POST" role="form">
+		<form id="add_user_form">
+
+			<div id="error_text" class="alert alert-danger" style="display: none;"></div>
+
 			<table class="table table-bordered">
 				<tr>
 					<th>Email</th>
@@ -102,18 +90,52 @@ $users = $users->get_list ();
 <script src="script/bootstrap-3.3.6-dist/js/bootstrap.js"></script>
 <script src="script/bootstrap-select.min.js"></script>
 
+<script src="script/x.js"></script>
+
 <script type="text/javascript">
 	$(function () {
 		$('#datetimepicker').datetimepicker({
 			format:'DD.MM.YYYY'
 		});
 		$('.selectpicker').selectpicker();
+
+		$("#add_user_form").submit (function (event) {
+
+			event.preventDefault ();
+
+			var form = this;
+
+			perform_action (
+				"create_user",
+				{
+					email: form.email.value,
+					password: form.password.value,
+					name: form.name.value,
+					surname: form.surname.value,
+					is_admin: form.is_admin.value
+				},
+				function (response) {
+
+					if (response.errored ()) {
+
+						$("#error_text")
+							.text (get_error_text (response.error))
+							.show ();
+
+					} else {
+
+						$("#error_text").hide ();
+						window.location = "users_list.php";
+
+					}
+				}
+			);
+		});
 	});
 </script>
 
 </body>
 </html><?php
 
-		}
 	}
 }
