@@ -2,6 +2,7 @@
 
 include_once ("utils.php");
 include_once ("x.php");
+include_once ("auth.php");
 
 class Users {
 	public function get_info ($id) {
@@ -25,8 +26,6 @@ class Users {
 	public function create ($email, $password, $name, $surname, $is_admin) {
 
 		include_once ("db_connect.php");
-
-		include_once ("auth.php");
 
 		global $utils, $auth;
 
