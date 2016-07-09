@@ -6,7 +6,7 @@ abstract class Errors {
 	const EMAIL_FORMAT_INVALID = 2;
 	const PASSWORD_TOO_SHORT = 3;
 	const NAME_IS_EMPTY = 4;
-	const SURNAME_IS_EMPTY = 4;
+	const SURNAME_IS_EMPTY = 5;
 }
 
 class Response {
