@@ -56,7 +56,7 @@ if (!$is_authorized) {
 		<div class="container">
 			<div class="form-group">
 				<a href="/admin.php" class="btn btn-default">Admin panel</a>
-				<a href="/add_user.php" class="btn btn-default">Create user</a>
+				<a href="/add_user.html" class="btn btn-default">Create user</a>
 			</div>
 
 			<div class="form-group">
