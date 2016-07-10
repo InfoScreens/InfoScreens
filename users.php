@@ -14,13 +14,12 @@ class Users {
 		$escaped_id = $utils->escape_sql ($id);
 
 		$row = mysql_fetch_array (mysql_query ("SELECT * FROM `users` WHERE `userId`='".$escaped_id."';"));
-		$info = NULL;
 
-		if ($row != NULL) {
-			$info = $this->extract_user_info ($row);
+		if (!$row) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
 		}
 
-		return $info;
+		return new Response ($this->extract_user_info ($row));
 	}
 
 	public function create ($email, $password, $name, $surname, $is_admin) {

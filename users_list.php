@@ -12,7 +12,7 @@ if (!$is_authorized) {
 
 } else {
 
-	$user_info = $users->get_info ($auth->get_authorized_id ());
+	$user_info = $users->get_info ($auth->get_authorized_id ()->data)->data;
 
 	if (!$user_info["is_admin"]) {
 		$utils->redirect ("/admin.php");

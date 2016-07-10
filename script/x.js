@@ -7,7 +7,8 @@ var Errors = {
     NAME_IS_EMPTY: 4,
     SURNAME_IS_EMPTY: 5,
     AJAX_ERROR: 6,
-    UNKNOWN_ACTION: 7
+    UNKNOWN_ACTION: 7,
+    NOT_AUTHORIZED: 8
 };
 
 var ErrorTexts = {

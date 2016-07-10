@@ -1,28 +1,4 @@
-<?php
-
-include_once ("auth.php");
-include_once ("users.php");
-include_once ("utils.php");
-
-$is_authorized = $auth->is_authorized ();
-
-if (!$is_authorized) {
-
-	$utils->redirect ("/login.php");
-
-} else {
-
-	$user_info = $users->get_info ($auth->get_authorized_id ());
-
-	if (!$user_info["is_admin"]) {
-
-		$utils->redirect ("/admin.php");
-
-	} else {
-
-		$users = $users->get_list ();
-
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Add user</title>
@@ -99,6 +75,20 @@ if (!$is_authorized) {
 		});
 		$('.selectpicker').selectpicker();
 
+		perform_action (
+			"get_currrent_user_info",
+			null,
+			function (response) {
+				if (response.errored ()) {
+					window.location = "login.php";
+				} else {
+					if (!response.data.is_admin) {
+						window.location = "admin.php";
+					}
+				}
+			}
+		);
+
 		$("#add_user_form").submit (function (event) {
 
 			event.preventDefault ();
@@ -135,7 +125,4 @@ if (!$is_authorized) {
 </script>
 
 </body>
-</html><?php
-
-	}
-}
+</html>

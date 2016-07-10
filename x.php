@@ -9,6 +9,7 @@ abstract class Errors {
 	const SURNAME_IS_EMPTY = 5;
 	const AJAX_ERROR = 6;
 	const UNKNOWN_ACTION = 7;
+	const NOT_AUTHORIZED = 8;
 }
 
 class Response {

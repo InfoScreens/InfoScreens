@@ -64,6 +64,7 @@ if(isset($_GET['uploadfiles'])){
 }//*/
 
 include_once ("users.php");
+include_once ("auth.php");
 
 /**
  * Extract action parameters from POST request parameters
@@ -123,6 +124,15 @@ if (isset ($_POST["action"])) {
 				$parameters["surname"],
 				$parameters["is_admin"]
 			);
+			break;
+		case "get_currrent_user_info":
+			// if auhtorized
+			$result = $auth->get_authorized_id ();
+			if (!$result->errored ()) {
+				// get user info
+				$result = $users->get_info ($result->data);
+			}
+			$response = $result;
 			break;
 		default:
 			$response = new Response (Errors::UNKNOWN_ACTION);
