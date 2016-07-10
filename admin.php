@@ -71,7 +71,7 @@ if (!$is_authorized) {
 				<strong>Admin</strong>
 			</div>
 			<div class="form-group">
-				<a href="/users_list.php" class="btn btn-default">Manage users</a>
+				<a href="/users_list.html" class="btn btn-default">Manage users</a>
 			</div>
 		</div><?php
 
