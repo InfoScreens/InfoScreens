@@ -95,9 +95,13 @@ class Users {
 					$escaped_id
 				)
 			);
+
+			if (!$result) {
+				return new Response (null, Errors::DB_QUERY_FAILED);
+			}
 		}
 
-		return $result;
+		return new Response (null);
 	}
 
 	public function get_list () {
@@ -110,12 +114,16 @@ class Users {
 			)
 		);
 
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
 		$list = array ();
 		while ($row = mysql_fetch_array ($result)) {
 			$list[] = $this->extract_user_info ($row);
 		}
 
-		return $list;
+		return new Response ($list);
 	}
 
 	private function extract_user_info ($row) {

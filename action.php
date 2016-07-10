@@ -134,6 +134,25 @@ if (isset ($_POST["action"])) {
 			}
 			$response = $result;
 			break;
+		case "get_users_list":
+			// get user list
+			$response = $users->get_list ();
+			break;
+		case "set_user_is_admin":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"user_id" => "",
+					"is_admin" => 0
+				)
+			);
+			// set user permissions
+			$response = $users->set_info (
+				$parameters["user_id"],
+				"is_admin",
+				$parameters["is_admin"]
+			);
+			break;
 		default:
 			$response = new Response (Errors::UNKNOWN_ACTION);
 	}

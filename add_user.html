@@ -67,6 +67,7 @@
 <script src="script/bootstrap-select.min.js"></script>
 
 <script src="script/x.js"></script>
+<script src="script/common.js"></script>
 
 <script type="text/javascript">
 	$(function () {
@@ -75,19 +76,7 @@
 		});
 		$('.selectpicker').selectpicker();
 
-		perform_action (
-			"get_currrent_user_info",
-			null,
-			function (response) {
-				if (response.errored ()) {
-					window.location = "login.php";
-				} else {
-					if (!response.data.is_admin) {
-						window.location = "admin.php";
-					}
-				}
-			}
-		);
+		check_user_authorized (true);
 
 		$("#add_user_form").submit (function (event) {
 
