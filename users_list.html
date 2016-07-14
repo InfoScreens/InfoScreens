@@ -35,7 +35,7 @@
 						<td class="user_info_column_name"></td>
 						<td class="user_info_column_surname"></td>
 						<td>
-							<form class="user_info_permission_form">
+							<form class="user_info_permissions_form">
 								<input type="hidden" name="user_id" />
 								<select name="is_admin">
 									<option value="0">User</option>
@@ -71,9 +71,9 @@
 
 				check_user_authorized (true);
 
-				function huy (event) {
+				function buy (submit_event) {
 
-					event.preventDefault ();
+					submit_event.preventDefault ();
 
 					var form = this;
 
@@ -126,18 +126,18 @@
 										.clone ()
 										.removeClass ("template"),
 									permissions = user.is_admin ? 1 : 0,
-									permission_form = row.find (".user_info_permission_form")[0];
+									permissions_form = row.find (".user_info_permissions_form")[0];
 
 								row.find (".user_info_column_email").text (user.email);
 								row.find (".user_info_column_name").text (user.name);
 								row.find (".user_info_column_surname").text (user.surname);
 
-								permission_form.user_id.value = user.id;
-								permission_form.is_admin.value
-									= permission_form.is_admin_old.value
-									= permissions;
+								$(permissions_form).submit (buy);
 
-								$(permission_form).submit (huy);
+								permissions_form.user_id.value = user.id;
+								permissions_form.is_admin.value
+									= permissions_form.is_admin_old.value
+									= permissions;
 
 								container.append (row);
 							}
