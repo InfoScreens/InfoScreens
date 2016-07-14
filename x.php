@@ -10,6 +10,8 @@ abstract class Errors {
 	const AJAX_ERROR = 6;
 	const UNKNOWN_ACTION = 7;
 	const NOT_AUTHORIZED = 8;
+	const DEVICE_NOT_EXIST = 9;
+	const DEVICE_ALREADY_ACTIVATED = 10;
 }
 
 class Response {

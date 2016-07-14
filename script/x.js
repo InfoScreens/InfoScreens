@@ -8,7 +8,9 @@ var Errors = {
     SURNAME_IS_EMPTY: 5,
     AJAX_ERROR: 6,
     UNKNOWN_ACTION: 7,
-    NOT_AUTHORIZED: 8
+    NOT_AUTHORIZED: 8,
+    DEVICE_NOT_EXIST: 9,
+    DEVICE_ALREADY_ACTIVATED: 10
 };
 
 var ErrorTexts = {
