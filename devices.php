@@ -165,7 +165,7 @@ class Devices {
 	private function extract_device_info ($row) {
 		return array (
 			"id" => $row["id"],
-			"activated" => $row["activated"]
+			"activated" => intval ($row["activated"])
 		);
 	}
 }
