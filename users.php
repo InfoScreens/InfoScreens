@@ -5,7 +5,7 @@ include_once ("x.php");
 include_once ("auth.php");
 
 class Users {
-	public function get_info ($id) {
+	public function get ($id) {
 
 		include_once ("db_connect.php");
 
