@@ -82,6 +82,11 @@ class Auth {
 
 		global $utils;
 
+		$result = $utils->can_manage_users ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		$result = $utils->check_email ($email);
 		if ($result->errored ()) {
 			return $result;

@@ -28,6 +28,11 @@ class Users {
 
 		global $utils, $auth;
 
+		$result = $utils->can_manage_users ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		$result = $utils->check_email ($email);
 		if ($result->errored ()) {
 			return $result;
@@ -80,6 +85,11 @@ class Users {
 
 		global $utils;
 
+		$result = $utils->can_manage_users ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		$result = false;
 
 		$escaped_id = $utils->escape_sql ($id);
@@ -107,6 +117,13 @@ class Users {
 	public function get_list () {
 
 		include_once ("db_connect.php");
+
+		global $utils;
+
+		$result = $utils->can_manage_users ();
+		if ($result->errored ()) {
+			return $result;
+		}
 
 		$result = mysql_query (
 			sprintf (
