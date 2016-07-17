@@ -22,7 +22,9 @@ var ErrorTexts = {
     3: "Password is too short",
     4: "Name is empty",
     5: "Surname is empty",
-    6: "AJAX error"
+    6: "AJAX error",
+    11: "Not admin",
+    12: "Not super admin"
 };
 
 function get_error_text (error) {

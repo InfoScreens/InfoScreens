@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>(Service) All devices</title>
+    <meta charset="utf8">
+    <link type="text/css" rel="stylesheet" href="script/bootstrap-3.3.6-dist/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="css/style.css">
+    <link href="script/vis/dist/vis.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link href="css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link href="css/bootstrap-select.min.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="container">
+    <div class="form-group">
+        <button id="create_device_button" class="btn btn-default">Create device</button>
+    </div>
+
+    <div class="form-group">
+
+        <div id="error_text" class="alert alert-danger" style="display: none;"></div>
+
+        <table id="devices_list_table" class="table table-bordered">
+            <tr>
+                <th>Id</th>
+            </tr>
+            <tr class="template device_info_row">
+                <td class="device_info_column_id"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script src="script/jquery-2.2.4.min.js"></script>
+<script src="script/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+
+<script src="script/moment-with-locales.js"></script>
+<script src="script/bootstrap-datetimepicker.js"></script>
+
+<script src="script/bootstrap-3.3.6-dist/js/bootstrap.js"></script>
+<script src="script/bootstrap-select.min.js"></script>
+
+<script src="script/x.js"></script>
+<script src="script/common.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker').datetimepicker({
+            format:'DD.MM.YYYY'
+        });
+        $('.selectpicker').selectpicker();
+
+        check_user_authorized (true);
+
+        function update_devices_list () {
+
+            perform_action (
+                    "get_devices_list",
+                    null,
+                    function (response) {
+
+                        if (response.errored ()) {
+
+                            $("#error_text")
+                                    .text (get_error_text (response.error))
+                                    .show ();
+
+                        } else {
+
+                            $("#error_text").hide ();
+
+                            var row_template = $("#devices_list_table tr.template.device_info_row"),
+                                    container = row_template.parent (),
+                                    devices_list = response.data;
+
+                            container.find ("tr.can_be_removed")
+                                    .remove ();
+
+                            for (var i in devices_list) {
+                                var device = devices_list[i],
+                                        row = row_template
+                                                .clone ()
+                                                .removeClass ("template")
+                                                .addClass ("can_be_removed");
+
+                                row.find (".device_info_column_id").text (device.id);
+
+                                container.append (row);
+                            }
+                        }
+                    }
+            );
+        }
+
+        $("#create_device_button").click (function () {
+            perform_action (
+                    "create_device",
+                    null,
+                    function (response) {
+
+                        if (response.errored ()) {
+
+                            $("#error_text")
+                                    .text (get_error_text (response.error))
+                                    .show ();
+
+                        } else {
+
+                            $("#error_text").hide ();
+                            update_devices_list ()
+
+                        }
+                    }
+            );
+        });
+
+        update_devices_list ();
+    });
+</script>
+
+</body>
+</html>

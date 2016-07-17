@@ -63,6 +63,7 @@ if(isset($_GET['uploadfiles'])){
 
 include_once ("users.php");
 include_once ("auth.php");
+include_once ("devices.php");
 
 /**
  * Extract action parameters from POST request parameters
@@ -150,6 +151,15 @@ if (isset ($_POST["action"])) {
 				"is_admin",
 				$parameters["is_admin"]
 			);
+			break;
+		case "create_device":
+			// create device
+			/* TODO: check of user priveleges */
+			$response = $devices->create ();
+			break;
+		case "get_devices_list":
+			// get devices list
+			$response = $devices->get_list ();
 			break;
 		default:
 			$response = new Response (Errors::UNKNOWN_ACTION);
