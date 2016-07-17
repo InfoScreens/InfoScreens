@@ -142,6 +142,54 @@ class Devices {
 			"id" => $row["id"]
 		);
 	}
+
+	/**
+	 * get list of user's devices
+	 *
+	 * @return Response	data is array of results from `extract_device_info` applied to all queried database rows
+	 */
+	public function get_list_of_user ($user_id) {
+
+		include_once ("db_connect.php");
+
+		global $utils;
+
+		$escaped_user_id = $utils->escape_sql ($user_id);
+
+		$result = mysql_query (
+			sprintf (
+				"SELECT * FROM `devices` NATURAL JOIN (SELECT `user_id`, `device_id` `id`, `device_name` FROM `user_devices` WHERE `user_devices`.`user_id` = '%s') as a;",
+				$escaped_user_id
+			)
+		);
+
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
+		$list = array ();
+		while ($row = mysql_fetch_array ($result)) {
+			$list[] = $this->extract_user_device_info ($row);
+		}
+
+		return new Response ($list);
+	}
+
+	/* TODO: return object of class `UserDevice` (when class `UserDevice` is done) */
+	/**
+	 * extract user's device information from database row
+	 *
+	 * @param $row		result of `mysql_fetch_array`
+	 * @return array	associative array of properties
+	 */
+	private function extract_user_device_info ($row) {
+		return array (
+			"device_specific" => $this->extract_device_info ($row),
+			"user_specific" => array (
+				"name" => $row["device_name"]
+			)
+		);
+	}
 }
 
 $devices = new Devices ();

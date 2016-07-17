@@ -59,7 +59,19 @@ CREATE TABLE `users` (
 --
 
 CREATE TABLE `devices` (
-  `id` char(36) NOT NULL
+  `id` char(36) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_devices`
+--
+
+CREATE TABLE `user_devices` (
+  `user_id` int(11) NOT NULL,
+  `device_id` char(36) CHARACTER SET utf8 NOT NULL,
+  `device_name` varchar(50) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -92,6 +104,14 @@ ALTER TABLE `users`
 --
 ALTER TABLE `devices`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `user_devices`
+--
+ALTER TABLE `user_devices`
+  ADD UNIQUE KEY `user_id` (`user_id`,`device_id`),
+  ADD KEY `user_id_2` (`user_id`),
+  ADD KEY `device_id` (`device_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
