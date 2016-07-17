@@ -128,7 +128,7 @@ if (isset ($_POST["action"])) {
 			$result = $auth->get_authorized_id ();
 			if (!$result->errored ()) {
 				// get user info
-				$result = $users->get_info ($result->data);
+				$result = $users->get ($result->data);
 			}
 			$response = $result;
 			break;
