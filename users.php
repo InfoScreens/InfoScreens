@@ -100,8 +100,6 @@ class Users {
 			return $result;
 		}
 
-		$result = false;
-
 		$escaped_id = $utils->escape_sql ($id);
 
 		if ($key == "is_admin") {
