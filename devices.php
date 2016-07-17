@@ -77,26 +77,6 @@ class Devices {
 	}
 
 	/**
-	 * activate device
-	 *
-	 * @param $id		id of device
-	 * @return Response
-	 */
-	public function activate_device ($id) {
-
-		$device = $this->get_device ($id);
-		if ($device->errored ()) {
-			return $device;
-		}
-
-		if ($device->data["activated"]) {
-			return new Response (null, Errors::DEVICE_ALREADY_ACTIVATED);
-		}
-
-		return $this->set_property ($id, "activated", 1);
-	}
-
-	/**
 	 * set property value
 	 *
 	 * @param $id		id of device
@@ -111,23 +91,6 @@ class Devices {
 		global $utils;
 
 		$escaped_id = $utils->escape_sql ($id);
-
-		if ($name == "activated") {
-
-			$value = (is_numeric ($value) ? intval ($value) : 0) ? 1 : 0;
-
-			$result = mysql_query (
-				sprintf (
-					"UPDATE `devices` SET `activated` = %d WHERE `id` = '%s';",
-					$value,
-					$escaped_id
-				)
-			);
-
-			if (!$result) {
-				return new Response (null, Errors::DB_QUERY_FAILED);
-			}
-		}
 
 		return new Response (null);
 	}
@@ -164,8 +127,7 @@ class Devices {
 	 */
 	private function extract_device_info ($row) {
 		return array (
-			"id" => $row["id"],
-			"activated" => intval ($row["activated"])
+			"id" => $row["id"]
 		);
 	}
 }

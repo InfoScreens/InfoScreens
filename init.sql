@@ -59,8 +59,7 @@ CREATE TABLE `users` (
 --
 
 CREATE TABLE `devices` (
-  `id` char(36) NOT NULL,
-  `activated` int(11) NOT NULL DEFAULT '0'
+  `id` char(36) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
