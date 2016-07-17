@@ -11,7 +11,7 @@ var Errors = {
     NOT_AUTHORIZED: 8,
     DEVICE_NOT_EXIST: 9,
     DEVICE_ALREADY_ACTIVATED: 10,
-    NOT_ALLOWED_TO_MANAGE_USERS: 11
+    NOT_ADMIN: 11
 };
 
 var ErrorTexts = {

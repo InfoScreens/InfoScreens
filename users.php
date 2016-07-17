@@ -28,7 +28,7 @@ class Users {
 
 		global $utils, $auth;
 
-		$result = $utils->can_manage_users ();
+		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
 		}
@@ -85,7 +85,7 @@ class Users {
 
 		global $utils;
 
-		$result = $utils->can_manage_users ();
+		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
 		}
@@ -120,7 +120,7 @@ class Users {
 
 		global $utils;
 
-		$result = $utils->can_manage_users ();
+		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
 		}

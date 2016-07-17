@@ -12,7 +12,7 @@ abstract class Errors {
 	const NOT_AUTHORIZED = 8;
 	const DEVICE_NOT_EXIST = 9;
 	const DEVICE_ALREADY_ACTIVATED = 10;
-	const NOT_ALLOWED_TO_MANAGE_USERS = 11;
+	const NOT_ADMIN = 11;
 }
 
 class Response {

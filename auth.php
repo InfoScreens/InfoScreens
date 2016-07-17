@@ -82,7 +82,7 @@ class Auth {
 
 		global $utils;
 
-		$result = $utils->can_manage_users ();
+		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
 		}

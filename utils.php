@@ -31,7 +31,7 @@ class Utils {
 		return new Response (null);
 	}
 
-	public function can_manage_users () {
+	public function check_is_admin () {
 
 		global $auth, $users;
 
@@ -48,7 +48,7 @@ class Utils {
 		$user = $user->data;
 
 		if (!$user["is_admin"]) {
-			return new Response (null, Errors::NOT_ALLOWED_TO_MANAGE_USERS);
+			return new Response (null, Errors::NOT_ADMIN);
 		}
 
 		return new Response (null);
