@@ -33,6 +33,16 @@ class Utils {
 
 	public function check_is_admin () {
 
+		return $this->check_is_admin_or_super_admin ();
+	}
+
+	public function check_is_super_admin () {
+
+		return $this->check_is_admin_or_super_admin (true);
+	}
+
+	private function check_is_admin_or_super_admin ($is_super_admin = false) {
+
 		global $auth, $users;
 
 		$user_id = $auth->get_authorized_id ();
@@ -49,6 +59,10 @@ class Utils {
 
 		if (!$user["is_admin"]) {
 			return new Response (null, Errors::NOT_ADMIN);
+		}
+
+		if ($is_super_admin && !$user["is_super_admin"]) {
+			return new Response (null, Errors::NOT_SUPER_ADMIN);
 		}
 
 		return new Response (null);

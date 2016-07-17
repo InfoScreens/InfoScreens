@@ -13,6 +13,7 @@ abstract class Errors {
 	const DEVICE_NOT_EXIST = 9;
 	const DEVICE_ALREADY_ACTIVATED = 10;
 	const NOT_ADMIN = 11;
+	const NOT_SUPER_ADMIN = 12;
 }
 
 class Response {

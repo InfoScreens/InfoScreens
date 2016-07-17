@@ -5,6 +5,9 @@ include_once ("x.php");
 include_once ("auth.php");
 
 class Users {
+	const PERMISSION_ADMIN = 1;
+	const PERMISSION_SUPER_ADMIN = 2;
+
 	public function get ($id) {
 
 		include_once ("db_connect.php");
@@ -31,6 +34,13 @@ class Users {
 		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
+		}
+
+		if ($is_admin) {
+			$result = $utils->check_is_super_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
 		}
 
 		$result = $utils->check_email ($email);
@@ -98,6 +108,13 @@ class Users {
 
 			$value = (is_numeric ($value) ? intval ($value) : 0) ? 1 : 0;
 
+			if ($value) {
+				$result = $utils->check_is_super_admin ();
+				if ($result->errored ()) {
+					return $result;
+				}
+			}
+
 			$result = mysql_query (
 				sprintf (
 					"UPDATE `users` SET `permissions` = %d WHERE `userId` = '%s';",
@@ -144,13 +161,18 @@ class Users {
 	}
 
 	private function extract_user_info ($row) {
-		return array (
+		$permissions = intval ($row["permissions"]);
+		$info = array (
 			"name" => $row["name"],
 			"surname" => $row["surname"],
 			"email" => $row["email"],
-			"is_admin" => $row["permissions"] == "1",
+			"is_admin" => $permissions & Users::PERMISSION_ADMIN,
 			"id" => $row["userId"]
 		);
+		if ($info["is_admin"]) {
+			$info["is_super_admin"] = $permissions & Users::PERMISSION_SUPER_ADMIN;
+		}
+		return $info;
 	}
 
 	public function check_name ($name) {
