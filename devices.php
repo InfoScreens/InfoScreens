@@ -54,6 +54,11 @@ class Devices {
 
 		global $utils;
 
+		$result = $utils->check_is_super_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		$result = mysql_query ("SELECT UUID() uuid;");
 		if (!$result) {
 			return new Response (null, Errors::DB_QUERY_FAILED);
@@ -103,6 +108,13 @@ class Devices {
 	public function get_list () {
 
 		include_once ("db_connect.php");
+
+		global $utils;
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
 
 		$result = mysql_query ("SELECT * FROM `devices`;");
 
