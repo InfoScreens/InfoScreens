@@ -65,6 +65,41 @@ if(isset($_GET['uploadfiles'])){
 
 
 
+if(isset($_GET['saveItem'])){
+
+	/*
+	Success: array(1) {
+  ["data"]=>
+  string(128) "{"id":"257","content":"video_2016-05-20_11-44-30.mov","editable":true,"start":"2016-07-14T10:00:00","end":"2016-07-14T11:00:00"}"
+  }
+	*/
+
+  	$data = json_decode($_POST["data"], true);
+  	//var_dump($data);
+	include "db_connect.php";
+	//echo $data["start"];
+	$sql_query = "INSERT INTO `schedule`(`device`, `date`, `fileId`, `startTime`, `endTime`) VALUES ('".$data['mon']."', '".$data['date']."', '".$data['id']."',  '".$data['start']."', '".$data['end']."')";
+	$query = mysql_query($sql_query);
+	echo mysql_error();
+
+	echo "sql_query: ".$sql_query;
+	
+
+}//*/
+
+
+if(isset($_GET["openSchedule"])){
+	$data = json_decode($_POST["data"], true);
+	include "db_connect.php";
+	$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."'";
+	$query = mysql_query($sql_query);
+	$response = array();
+	while($item = mysql_fetch_assoc($query)){
+		$response[] = $item;
+	}
+	echo json_encode($response);
+
+}
 
 
 

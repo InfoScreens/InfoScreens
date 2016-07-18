@@ -50,7 +50,7 @@ if (!$is_authorized) {
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
                 </div>
-        <button type="button" class="btn btn-default" style="width:100%;">Загрузить программу</button>
+        <button type="button" class="btn btn-default" style="width:100%;" id="openScheduleBtn" onclick="openSchedule()">Загрузить программу</button>
 		<div class="well well-sm">
 			<div class="form-group">
 				<strong><?php echo $utils->escape_html ($user_info["name"]." ".$user_info["surname"]); ?></strong>
@@ -123,6 +123,34 @@ if (!$is_authorized) {
 	  </div>
 
 
+	<div id="time-setting">
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-6 "><span class="text-center">Время начала <br> (Start time)</span></div>
+			<div class="col-lg-6 col-md-6 col-sm-6 "><span class="text-center">Время конца<br>(End time)</span></div>		
+		</div>
+		<form role="form" class="form-group ">
+			<div class="row" >
+				<div class="col-lg-6 col-md-6 col-sm-6 form-inline">
+					<input class="form-control" type="text" maxlength="2" size="2" id="startHour" value="00">
+					<span>:</span>
+					<input class="form-control" type="text" maxlength="2" size="2" id="startMinutes" value="00">
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 form-inline">
+					<input class="form-control" type="text" maxlength="2" size="2" id="endHour" value="00">
+					<span>:</span>
+					<input class="form-control" type="text" maxlength="2" size="2" id="endMinutes" value="00">
+				</div>		
+			</div>
+			<div class="row">
+			<button type="button" class="btn btn-primary btn-sm btn-block" id="addItemBtn">Добавить/Add</button>
+
+			<!--<button type="button" class="btn .btn-info .btn-block" id="addItem">Добавить/Add</button>-->
+			</div>
+		</form>
+	</div>
+	<div id="overlay"></div>
+
+
 	<script src="script/jquery-2.2.4.min.js"></script>
 	<script src="script/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
 	
@@ -136,7 +164,7 @@ if (!$is_authorized) {
 	<script type="text/javascript">
             $(function () {
                 $('#datetimepicker').datetimepicker({
-                	format:'DD.MM.YYYY',
+                	format:'YYYY-MM-DD',
                 	defaultDate: date
                 });
                 $('.selectpicker').selectpicker();
@@ -152,5 +180,4 @@ if (!$is_authorized) {
 </body>
 </html>
 <?php
-
 }
