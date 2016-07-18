@@ -154,11 +154,18 @@ class Devices {
 
 		include_once ("db_connect.php");
 
-		global $utils;
+		global $utils, $auth;
 
 		$result = $utils->check_is_user ();
 		if ($result->errored ()) {
 			return $result;
+		}
+
+		if ($auth->get_authorized_id ()->data != $user_id) {
+			$result = $utils->check_is_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
 		}
 
 		$escaped_user_id = $utils->escape_sql ($user_id);
