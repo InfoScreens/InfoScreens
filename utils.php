@@ -52,6 +52,8 @@ class Utils {
 	/* TODO: add named constants */
 	/* TODO: make public and replace `check_is_user`, `check_is_admin`, `check_is_super_admin` */
 	/**
+	 * checks if current user permissions satisfy reqired permissions level
+	 *
 	 * @param int $level	minimal reqired permissions level, 0 - anonymous, 1 - user, 2 - admin, 3 - superadmin
 	 * @return Response
 	 */
