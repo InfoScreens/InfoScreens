@@ -1,6 +1,7 @@
 <?php
 
 include_once ("utils.php");
+include_once ("auth.php");
 include_once ("x.php");
 
 /**
@@ -81,6 +82,7 @@ class Devices {
 		return new Response ($id);
 	}
 
+	/* TODO: move to superclass, when superclass created */
 	/**
 	 * set property value
 	 *
@@ -154,6 +156,11 @@ class Devices {
 
 		global $utils;
 
+		$result = $utils->check_is_user ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		$escaped_user_id = $utils->escape_sql ($user_id);
 
 		$result = mysql_query (
@@ -173,6 +180,101 @@ class Devices {
 		}
 
 		return new Response ($list);
+	}
+
+	/**
+	 * allow usage of device by user
+	 *
+	 * @param $device_id
+	 * @param $user_id
+	 * @param $allow
+	 * @return Response
+	 */
+	public function allow_to_user ($device_id, $user_id, $allow) {
+
+		include_once ("db_connect.php");
+
+		global $utils;
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		$escaped_user_id = $utils->escape_sql ($user_id);
+		$escaped_device_id = $utils->escape_sql ($device_id);
+
+		if ($allow) {
+			$result = mysql_query (
+				sprintf (
+					"INSERT INTO `user_devices` (`user_id`, `device_id`, `device_name`) VALUES ('%s', '%s', '%s');",
+					$escaped_user_id,
+					$escaped_device_id,
+					$escaped_device_id
+				)
+			);
+			if (!$result) {
+				return new Response (null, Errors::DB_QUERY_FAILED);
+			}
+		} else {
+			$result = mysql_query (
+				sprintf (
+					"DELETE FROM `user_devices` WHERE `user_id` = '%s' AND `device_id` = '%s';",
+					$escaped_user_id,
+					$escaped_device_id
+				)
+			);
+			if (!$result) {
+				return new Response (null, Errors::DB_QUERY_FAILED);
+			}
+		}
+
+		return new Response (null);
+	}
+
+	/**
+	 * set user's device name
+	 *
+	 * @param $device_id
+	 * @param $user_id
+	 * @param $name
+	 * @return Response
+	 */
+	public function set_name_for_user ($device_id, $user_id, $name) {
+
+		include_once ("db_connect.php");
+
+		global $utils, $auth;
+
+		$result = $utils->check_is_user ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		if ($auth->get_authorized_id ()->data != $user_id) {
+			$result = $utils->check_is_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
+		}
+
+		$escaped_user_id = $utils->escape_sql ($user_id);
+		$escaped_device_id = $utils->escape_sql ($device_id);
+		$escaped_name = $utils->escape_sql ($name);
+
+		$result = mysql_query (
+			sprintf (
+				"UPDATE `user_devices` SET `device_name` = '%s' WHERE `user_id` = '%s' AND `device_id` = '%s';",
+				$escaped_name,
+				$escaped_user_id,
+				$escaped_device_id
+			)
+		);
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
+		return new Response (null);
 	}
 
 	/* TODO: return object of class `UserDevice` (when class `UserDevice` is done) */
