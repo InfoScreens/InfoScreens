@@ -65,6 +65,7 @@ include_once ("users.php");
 include_once ("auth.php");
 include_once ("devices.php");
 
+/* TODO: make more strict, remove default values and return errored Response */
 /**
  * Extract action parameters from POST request parameters
  *
@@ -159,6 +160,50 @@ if (isset ($_POST["action"])) {
 		case "get_devices_list":
 			// get devices list
 			$response = $devices->get_list ();
+			break;
+		case "allow_device_to_user":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"device_id" => "",
+					"user_id" => "",
+					"allow" => 0
+				)
+			);
+			// allow device to user
+			$response = $devices->allow_to_user (
+				$parameters["device_id"],
+				$parameters["user_id"],
+				intval ($parameters["allow"])
+			);
+			break;
+		case "get_list_of_user_devices":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"user_id" => "",
+				)
+			);
+			// get list of user devices
+			$response = $devices->get_list_of_user (
+				$parameters["user_id"]
+			);
+			break;
+		case "set_device_name_for_user":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"device_id" => "",
+					"user_id" => "",
+					"name" => ""
+				)
+			);
+			// allow device to user
+			$response = $devices->set_name_for_user (
+				$parameters["device_id"],
+				$parameters["user_id"],
+				$parameters["name"]
+			);
 			break;
 		default:
 			$response = new Response (Errors::UNKNOWN_ACTION);
