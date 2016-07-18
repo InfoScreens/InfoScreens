@@ -154,7 +154,6 @@ if (isset ($_POST["action"])) {
 			break;
 		case "create_device":
 			// create device
-			/* TODO: check of user priveleges */
 			$response = $devices->create ();
 			break;
 		case "get_devices_list":
