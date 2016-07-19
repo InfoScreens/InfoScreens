@@ -2,9 +2,13 @@
 
 include_once ("utils.php");
 include_once ("x.php");
+include_once ("auth.php");
 
 class Users {
-	public function get_info ($id) {
+	const PERMISSION_ADMIN = 1;
+	const PERMISSION_SUPER_ADMIN = 2;
+
+	public function get ($id) {
 
 		include_once ("db_connect.php");
 
@@ -13,22 +17,31 @@ class Users {
 		$escaped_id = $utils->escape_sql ($id);
 
 		$row = mysql_fetch_array (mysql_query ("SELECT * FROM `users` WHERE `userId`='".$escaped_id."';"));
-		$info = NULL;
 
-		if ($row != NULL) {
-			$info = $this->extract_user_info ($row);
+		if (!$row) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
 		}
 
-		return $info;
+		return new Response ($this->extract_user_info ($row));
 	}
 
 	public function create ($email, $password, $name, $surname, $is_admin) {
 
 		include_once ("db_connect.php");
 
-		include_once ("auth.php");
-
 		global $utils, $auth;
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		if ($is_admin) {
+			$result = $utils->check_is_super_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
+		}
 
 		$result = $utils->check_email ($email);
 		if ($result->errored ()) {
@@ -82,13 +95,23 @@ class Users {
 
 		global $utils;
 
-		$result = false;
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
 
 		$escaped_id = $utils->escape_sql ($id);
 
 		if ($key == "is_admin") {
 
 			$value = (is_numeric ($value) ? intval ($value) : 0) ? 1 : 0;
+
+			if ($value) {
+				$result = $utils->check_is_super_admin ();
+				if ($result->errored ()) {
+					return $result;
+				}
+			}
 
 			$result = mysql_query (
 				sprintf (
@@ -97,14 +120,25 @@ class Users {
 					$escaped_id
 				)
 			);
+
+			if (!$result) {
+				return new Response (null, Errors::DB_QUERY_FAILED);
+			}
 		}
 
-		return $result;
+		return new Response (null);
 	}
 
 	public function get_list () {
 
 		include_once ("db_connect.php");
+
+		global $utils;
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
 
 		$result = mysql_query (
 			sprintf (
@@ -112,22 +146,31 @@ class Users {
 			)
 		);
 
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
 		$list = array ();
 		while ($row = mysql_fetch_array ($result)) {
 			$list[] = $this->extract_user_info ($row);
 		}
 
-		return $list;
+		return new Response ($list);
 	}
 
 	private function extract_user_info ($row) {
-		return array (
+		$permissions = intval ($row["permissions"]);
+		$info = array (
 			"name" => $row["name"],
 			"surname" => $row["surname"],
 			"email" => $row["email"],
-			"is_admin" => $row["permissions"] == "1",
+			"is_admin" => $permissions & Users::PERMISSION_ADMIN,
 			"id" => $row["userId"]
 		);
+		if ($info["is_admin"]) {
+			$info["is_super_admin"] = $permissions & Users::PERMISSION_SUPER_ADMIN;
+		}
+		return $info;
 	}
 
 	public function check_name ($name) {

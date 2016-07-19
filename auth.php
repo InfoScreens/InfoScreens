@@ -22,17 +22,17 @@ class Auth {
 	public function get_authorized_id () {
 
 		$this->require_session ();
-		$id = null;
 
-		if (isset ($_COOKIE["auth_token"]) && isset ($_SESSION["auth_token"]) && $_SESSION["auth_token"] == $_COOKIE["auth_token"]) {
-			$id = $_SESSION["auth_user_id"];
+		if (!isset ($_COOKIE["auth_token"]) || !isset ($_SESSION["auth_token"]) || !$_SESSION["auth_token"] == $_COOKIE["auth_token"]) {
+			return new Response (null, Errors::NOT_AUTHORIZED);
 		}
 
-		return $id;
+		$id = $_SESSION["auth_user_id"];
+		return new Response ($id);
 	}
 
 	public function is_authorized () {
-		return $this->get_authorized_id () != NULL;
+		return $this->get_authorized_id ()->error == Errors::SUCCESS;
 	}
 
 	public function authorize ($email, $password) {
@@ -81,6 +81,11 @@ class Auth {
 		include_once ("db_connect.php");
 
 		global $utils;
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
 
 		$result = $utils->check_email ($email);
 		if ($result->errored ()) {

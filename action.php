@@ -1,7 +1,5 @@
 <?php
 
-//echo sha1(sha1("5555")."siloponni");
-
 /*
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
@@ -63,7 +61,158 @@ if(isset($_GET['uploadfiles'])){
 
 }//*/
 
+include_once ("users.php");
+include_once ("auth.php");
+include_once ("devices.php");
 
+/* TODO: make more strict, remove default values and return errored Response */
+/**
+ * Extract action parameters from POST request parameters
+ *
+ * @param	$keys_and_default_values	associative array of requested keys (as keys) associated default values (as values)
+ * @return								associative array with requested keys (as keys) and associated values or default values
+ */
+function get_action_parameters ($keys_and_default_values) {
+
+	global $_POST;
+
+	// parse json from POST request parameters
+	try {
+		$parameters = json_decode ($_POST["params"]);
+	} catch (Exception $exception) {
+		$parameters = array ();
+	}
+
+	$result = array ();
+	// set values for keys found in POST request parameters
+	foreach ($parameters as $key => $value) {
+		if (array_key_exists ($key, $keys_and_default_values)) {
+			$result[$key] = $value;
+		}
+	}
+	// set default values for keys not found in POST request parameters
+	foreach ($keys_and_default_values as $key => $value) {
+		if (!array_key_exists ($key, $result)) {
+			$result[$key] = $value;
+		}
+	}
+	return $result;
+}
+
+if (isset ($_POST["action"])) {
+
+	$action = $_POST["action"];
+
+	// handle requested action
+	switch ($action) {
+		case "create_user":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"email" => "",
+					"password" => "",
+					"name" => "",
+					"surname" => "",
+					"is_admin" => 0
+				)
+			);
+			// create user
+			$response = $users->create (
+				$parameters["email"],
+				$parameters["password"],
+				$parameters["name"],
+				$parameters["surname"],
+				$parameters["is_admin"]
+			);
+			break;
+		case "get_currrent_user_info":
+			// if auhtorized
+			$result = $auth->get_authorized_id ();
+			if (!$result->errored ()) {
+				// get user info
+				$result = $users->get ($result->data);
+			}
+			$response = $result;
+			break;
+		case "get_users_list":
+			// get user list
+			$response = $users->get_list ();
+			break;
+		case "set_user_is_admin":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"user_id" => "",
+					"is_admin" => 0
+				)
+			);
+			// set user permissions
+			$response = $users->set_info (
+				$parameters["user_id"],
+				"is_admin",
+				$parameters["is_admin"]
+			);
+			break;
+		case "create_device":
+			// create device
+			$response = $devices->create ();
+			break;
+		case "get_devices_list":
+			// get devices list
+			$response = $devices->get_list ();
+			break;
+		case "allow_device_to_user":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"device_id" => "",
+					"user_id" => "",
+					"allow" => 0
+				)
+			);
+			// allow device to user
+			$response = $devices->allow_to_user (
+				$parameters["device_id"],
+				$parameters["user_id"],
+				intval ($parameters["allow"])
+			);
+			break;
+		case "get_list_of_user_devices":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"user_id" => "",
+				)
+			);
+			// get list of user devices
+			$response = $devices->get_list_of_user (
+				$parameters["user_id"]
+			);
+			break;
+		case "set_device_name_for_user":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"device_id" => "",
+					"user_id" => "",
+					"name" => ""
+				)
+			);
+			// allow device to user
+			$response = $devices->set_name_for_user (
+				$parameters["device_id"],
+				$parameters["user_id"],
+				$parameters["name"]
+			);
+			break;
+		default:
+			$response = new Response (Errors::UNKNOWN_ACTION);
+	}
+
+	// send back result in json
+	header ("Content-Type: application/json");
+	echo $response->to_json ();
+}
 
 if(isset($_GET['saveItem'])){
 
