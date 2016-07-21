@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Devices of user</title>
+    <meta charset="utf8">
+    <link type="text/css" rel="stylesheet" href="script/bootstrap-3.3.6-dist/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="css/style.css">
+    <link href="script/vis/dist/vis.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link href="css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link href="css/bootstrap-select.min.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="container">
+    <div class="form-group">
+        <a href="/admin.php" class="btn btn-default">Admin panel</a>
+    </div>
+    <div class="well well-sm">
+        <div class="form-group">
+            <strong id="user_info_name"></strong>
+        </div>
+        <div class="form-group">
+            <i id="user_info_email"></i>
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        <div id="error_text" class="alert alert-danger" style="display: none;"></div>
+
+        <table id="devices_of_user_list_table" class="table table-bordered">
+            <tr>
+                <th>Device Id</th>
+                <th>Device name</th>
+                <th class="remove_if_not_admin">Allow</th>
+            </tr>
+            <tr class="template device_of_user_row">
+                <td class="device_id_column"></td>
+                <td>
+                    <form class="device_name_form">
+                        <input type="hidden" name="device_id" />
+                        <input type="hidden" name="name_old" />
+                        <input type="text" name="name" />
+                    </form>
+                </td>
+                <td class="remove_if_not_admin">
+                    <form class="device_allow_form">
+                        <input type="hidden" name="device_id" />
+                        <input type="hidden" name="allow_old" />
+                        <input type="checkbox" name="allow" />
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script src="script/jquery-2.2.4.min.js"></script>
+<script src="script/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+
+<script src="script/moment-with-locales.js"></script>
+<script src="script/bootstrap-datetimepicker.js"></script>
+
+<script src="script/bootstrap-3.3.6-dist/js/bootstrap.js"></script>
+<script src="script/bootstrap-select.min.js"></script>
+
+<script src="script/x.js"></script>
+<script src="script/common.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker').datetimepicker({
+            format:'DD.MM.YYYY'
+        });
+        $('.selectpicker').selectpicker();
+
+        var user_id = null,
+                is_admin,
+                all_devices;
+
+        var get_parameters = {};
+        if (location.href.indexOf ("?") != -1) {
+            var query = location.href.substr (location.href.indexOf ("?") + 1);
+            if (query.indexOf ("#") != -1) {
+                query = query.substr (0, query.indexOf ("#"));
+            }
+            var pairs = query.split ("&");
+            for (var i in pairs) {
+                var pair = pairs[i].split ("=");
+                if (pair.length > 0) {
+                    get_parameters[pair[0]] = pair.length >= 2 ? pair[1] : "";
+                }
+            }
+        }
+        if (get_parameters.hasOwnProperty ("user_id")) {
+            user_id = get_parameters.user_id;
+        }
+
+        perform_action (
+                "get_currrent_user_info",
+                null,
+                function (response) {
+                    if (response.errored ()) {
+                        window.location = "login.php";
+                    } else {
+                        var user = response.data;
+
+                        if (user_id == null) {
+                            user_id = user.id;
+                        }
+
+                        $("#user_info_name").text (user.name + " " + user.surname);
+                        $("#user_info_email").text (user.email);
+
+                        is_admin = user.is_admin;
+                        var temp = $(".remove_if_not_admin");
+                        if (is_admin) {
+                            temp.removeClass ("remove_if_not_admin");
+                            perform_action (
+                                    "get_devices_list",
+                                    null,
+                                    function (response) {
+                                        if (response.errored ()) {
+                                            $("#error_text")
+                                                    .text(get_error_text(response.error))
+                                                    .show();
+                                        } else {
+                                            all_devices = response.data;
+                                            update_devices_of_users_list ();
+                                        }
+                                    }
+                            )
+                        } else {
+                            temp.remove ();
+                            update_devices_of_users_list ();
+                        }
+
+                    }
+                }
+        );
+
+        function update_devices_of_users_list () {
+
+            perform_action (
+                    "get_list_of_user_devices",
+                    {
+                        user_id: user_id
+                    },
+                    function (response) {
+
+                        if (response.errored ()) {
+
+                            $("#error_text")
+                                    .text (get_error_text (response.error))
+                                    .show ();
+
+                        } else {
+
+                            $("#error_text").hide ();
+
+                            var row_template = $("#devices_of_user_list_table tr.template.device_of_user_row"),
+                                    container = row_template.parent (),
+                                    user_devices_map = {};
+
+                            for (var i in response.data) {
+                                var device = response.data[i];
+                                user_devices_map[device.device_specific.id] = device;
+                            }
+
+                            if (!is_admin) {
+                                all_devices = [];
+                                for (var i in response.data) {
+                                    var device = response.data[i];
+                                    all_devices.push ({id: device.device_specific.id});
+                                }
+                            }
+
+                            container.find ("tr.can_be_removed")
+                                    .remove ();
+
+                            for (var i in all_devices) {
+                                var device = all_devices[i],
+                                        row = row_template
+                                                .clone ()
+                                                .removeClass ("template")
+                                                .addClass ("can_be_removed"),
+                                        is_user_device = user_devices_map.hasOwnProperty (device.id),
+                                        device_user_info = is_user_device ? user_devices_map[device.id] : null;
+
+                                var form = row.find (".device_name_form")[0];
+                                if (is_user_device) {
+                                    form.name.value
+                                            = form.name_old.value
+                                            = device_user_info.user_specific.name;
+                                    form.device_id.value = device.id;
+                                    $(form.name).change (function () {
+                                        var form = this.parentElement;
+                                        perform_action (
+                                                "set_device_name_for_user",
+                                                {
+                                                    name: form.name.value,
+                                                    user_id: user_id,
+                                                    device_id: form.device_id.value
+                                                },
+                                                function (response) {
+                                                    if (response.errored ()) {
+                                                        $("#error_text")
+                                                                .text (get_error_text (response.error))
+                                                                .show ();
+                                                        form.name.value = form.name_old.value;
+                                                    } else {
+                                                        $("#error_text").hide ();
+                                                        form.name_old.value = form.name.value;
+                                                    }
+                                                }
+                                        );
+                                    });
+                                } else {
+                                    form.name.disabled = true;
+                                }
+                                row.find (".device_id_column").text (device.id);
+
+                                if (is_admin) {
+                                    form = row.find (".device_allow_form")[0];
+                                    form.allow.checked
+                                            = form.allow_old.checked
+                                            = is_user_device;
+                                    form.device_id.value = device.id;
+                                    $(form.allow).change (function () {
+                                        var form = this.parentElement;
+                                        perform_action (
+                                                "allow_device_to_user",
+                                                {
+                                                    allow: form.allow.checked,
+                                                    user_id: user_id,
+                                                    device_id: form.device_id.value
+                                                },
+                                                function (response) {
+                                                    if (response.errored ()) {
+                                                        $("#error_text")
+                                                                .text (get_error_text (response.error))
+                                                                .show ();
+                                                        form.allow.checked = form.allow_old.checked;
+                                                    } else {
+                                                        $("#error_text").hide ();
+                                                        update_devices_of_users_list ();
+                                                    }
+                                                }
+                                        );
+                                    });
+                                }
+
+                                container.append (row);
+                            }
+                        }
+                    }
+            );
+        }
+
+        update_devices_of_users_list ();
+    });
+</script>
+
+</body>
+</html>
