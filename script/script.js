@@ -9,21 +9,49 @@ function getTime(p){
   var hour = d.getHours() < 10 ? '0'+d.getHours() : d.getHours();
   var min = d.getMinutes() < 10 ? '0'+d.getMinutes() : d.getMinutes();
   var sec = d.getSeconds() < 10 ? '0'+d.getSeconds() : d.getSeconds();
+
+  var workDate = $("#date").val();
+  var workYear = workDate.substring(0, 4);
+  var workMonth = workDate.substring(5,7)-1;
+  var workDay = workDate.substring(8);
+  
+
+
   if(p == 'now'){
     return year+'-'+month+'-'+date+'T'+hour+':'+min+':'+sec; 
   }
   if(p == 'start' || p == 'min'){
     return year+'-'+month+'-'+date;
   }
-  if(p == 'workDate'){
-    var workDate = $("#date").val();
-    var workDay = workDate.substring(0,2);
-    var workMonth = workDate.substring(3,5);
-    var workYear = workDate.substring(6);
-    return workYear+'-'+workMonth+'-'+workDay+'T12:00:00';
+  if(p == 'workDate'){ 
+    workDate = new Date(workYear, workMonth, workDay, hour); //допустим здесь не совсем очевидно, но придумывать названия для новых
+                                                             //переменных мне лень, поэтому в workDate сначала кладу значение поля date, 
+                                                             //затем кладу в эту переменную дату, для которой мы сейчас редактируем трансляцию
+    var workYear = workDate.getFullYear();
+    var workMonth = workDate.getMonth()+1 < 10 ? '0'+(workDate.getMonth()+1) : workDate.getMonth()+1;
+    var workDay = workDate.getDate() < 10 ? '0'+workDate.getDate() : workDate.getDate();
+    var workHour = workDate.getHours() < 10 ? '0'+workDate.getHours() : workDate.getHours();
+    var workMin = workDate.getMinutes() < 10 ? '0'+workDate.getMinutes() : workDate.getMinutes();
+    var workSec = workDate.getSeconds() < 10 ? '0'+workDate.getSeconds() : workDate.getSeconds();
+    //console.log("workDate: "+workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00");
+    return workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00";
   }
-   if(p == "+3"){
-    return workYear+'-'+workMonth+'-'+workDay+'T15:00:00';
+   if(p == "+2"){ // +2 часа от workDate. Почему +2? Да потому что.
+
+    // ЧЁТ ХРЕНЬ ТУТ КАКАЯ-ТО ПРОИСХОДИТ: ПЕРЕПИСАТЬ.
+    workDate = new Date(workYear, workMonth, workDay, hour+1); //допустим здесь не совсем очевидно, но придумывать названия для новых
+                                                             //переменных мне лень, поэтому в workDate сначала кладу значение поля date, 
+                                                             //затем кладу в эту переменную дату, для которой мы сейчас редактируем трансляцию
+    
+    var workYear = workDate.getFullYear();
+    var workMonth = workDate.getMonth()+1 < 10 ? '0'+(workDate.getMonth()+1) : workDate.getMonth()+1;
+    var workDay = workDate.getDate() < 10 ? '0'+workDate.getDate() : workDate.getDate();
+    var workHour = workDate.getHours() < 10 ? '0'+workDate.getHours() : workDate.getHours();
+    var workMin = workDate.getMinutes() < 10 ? '0'+workDate.getMinutes() : workDate.getMinutes();
+    var workSec = workDate.getSeconds() < 10 ? '0'+workDate.getSeconds() : workDate.getSeconds();
+    //workDate.setHours(workDate.getHours()+2);
+    //console.log("+2 : "+workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00");
+    return workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00";
   }
 
 
@@ -41,19 +69,6 @@ function getTime(p){
 }
 
 
-//------schedule saving
-
-function updateSchedule(){
-  items.getIds();
-  console.log("update schedule");
-  var ids = items.Ids();
-
-}
-
-function addItems(){
-  console.log("add items");
-}
-
 
 
 //------timeline script
@@ -63,7 +78,7 @@ var container = document.getElementById("timeline");
 
   // Create a DataSet (allows two way data-binding)
   var items = new vis.DataSet([
-    //{id: 1, content: 'A', editable: true,  start: '2016-07-07', end:'2016-07-08'}
+    /*{id: 1, content: 'A', editable: true,  start: getTime("now"), end:getTime("+2")}*/
   ]);
 
 
@@ -76,33 +91,18 @@ var container = document.getElementById("timeline");
     end: getTime('end'),
     minHeight: '200px',
 
-    onAdd: function(item, callback){
-      console.log("adding");
-    },
-
-    onMove: function(item, callback){
-      console.log("moved");
-    }, 
-
-    onMoving: function(item, callback){
-      console.log("moving");
-    }, 
-
-    onUpdate: function(item, callback){
-      console.log("update");
-    }
 
     /*
     // always snap to full hours, independent of the scale
     snap: function (date, scale, step) {
       var hour = 60 * 60 * 1000;
       return Math.round(date / hour) * hour;
-    }*/
+    }//*/
 
 
     // to configure no snapping at all:
     //
-    //   snap: null
+    snap: null
     //
     // or let the snap function return the date unchanged:
     //
@@ -354,25 +354,96 @@ var container = document.getElementById("timeline");
 
 //------schedule upload
 
-function uploadSchedule(lol){
-  alert("ok");
+
+
+function uploadSchedule(){
+  
+}
+
+$("#datetimepicker").on("dp.change", function(e){
+  var today= moment($("#date").val(), "YYYY-MM-DD");
+  var tomorrow = moment($("#date").val(), "YYYY-MM-DD");  
+  tomorrow.add(1, "days");
+  console.log("Today is: "+today.format("YYYY-MM-DD"));
+  console.log("Tomorrow is: "+tomorrow.format("YYYY-MM-DD"));
+  timeline.setWindow(today.format("YYYY-MM-DD"), tomorrow.format("YYYY-MM-DD"));
+  uploadSchedule();
+});
+
+
+
+//------schedule saving/downloading/updating
+
+
+
+function saveItem(itemId){
+  var item = items.get(itemId);
+  item.mon = $("#monSelect").val();
+  item.date = $("#date").val();
+  var item = JSON.stringify(item);  
+  var data = new FormData();
+  data.append("data", item);
+  
+  $.ajax({
+    url:'../action.php?saveItem',
+    method:'POST',
+    data:data,
+    cache:false,
+    dataType:'text',
+    processData:false,
+    contentType:false,
+    success:function(respond, textStatus, jqXHR){
+      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+    },
+    error:function(jqXHR, textStatus, errorThrown){
+      console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
+    }
+
+  })//*/
+
+}
+
+function openSchedule(){
+  $(".element:not('.add-element')").remove();
+  var data = new FormData();
+  data.append("mon", $("#monSelect").val());
+  data.append("date", $("#date").val());
+
+  $.ajax({
+    url:'../action.php?openSchedule',
+    method:'POST',
+    data:data,
+    cache:false,
+    dataType:'text',
+    processData:false,
+    contentType:false,
+    success:function(respond, textStatus, jqXHR){
+      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+      var response = respond.slice(2, respond.length-2);
+      response = response.split('},{');
+      var item;
+      for(var i =0; i<response.length; i++){
+        //console.log("resp"+i+": "+response[i]);
+        item = "{"+response[i]+"}";
+        item = $.parseJSON(item);
+        console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
+        //items.add("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
+        items.add([{id:item.itemId, content:item.itemId, start: item.startTime, end: item.endTime}]);
+      }
+
+    },
+    error:function(jqXHR, textStatus, errorThrown){
+      console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
+    }
+
+  })
 }
 
 
 
 
-$("#date").on("edit", function(e){
-  //uploadSchedule($("#date").val());
-console.log("change");
-  alert("date was changed");
-})  //*/
-
-
-
-
-
-
-
+function updateItem(){
+}
 //------end of schedule upload
 
 //------add files
@@ -400,10 +471,12 @@ $("#addVideoBtn").click(function(){
   $("#addFile").trigger("click");
 })
 
-var files;
+
+
+
+var files, element;
 $("#addFiles").change(function(e){
   var files = this.files;
-
   e.stopPropagation();
   e.preventDefault();
   var form = document.getElementById("addFiles");
@@ -411,7 +484,6 @@ $("#addFiles").change(function(e){
   data.append("mon", $("#monSelect").val());
   data.append("date", $("#date").val());
 
-  //console.log(data);
   $.ajax({
     url:'../action.php?uploadfiles',
     method:'POST',
@@ -422,18 +494,18 @@ $("#addFiles").change(function(e){
     contentType:false,
     success:function(respond, textStatus, jqXHR){
       console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+
+      element = $.parseJSON(respond);
       
-      var element = $.parseJSON(respond);
-      //console.log(element);
-      $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
-      items.add([
-        {id:element["fileId"], content: element["fileName"], editable:true, start: getTime("workDate")}
-        ]);
+      $('#overlay').fadeIn(400, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
+      function(){ // пoсле выпoлнения предъидущей aнимaции
+        $('#time-setting') 
+          .css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
+          .animate({opacity: 1, top: '20%'}, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
+      });
       
       
-      //var ids = timeline.getIds();
-      //console.log(ids);
-      //*/
+      
       
     },
     error:function(jqXHR, textStatus, errorThrown){
@@ -447,3 +519,51 @@ $("#addFiles").change(function(e){
 
 
 //------end of add files
+
+
+//------window with time setting
+
+
+  /* Зaкрытие мoдaльнoгo oкнa, тут делaем тo же сaмoе нo в oбрaтнoм пoрядке */
+
+$('#addItemBtn').click( function(){ // лoвим клик пo крестику или пoдлoжке
+    var a1 = $("#startHour").val();
+    var a2 = $("#startMinutes").val();
+    var b1 = $("#endHour").val();
+    var b2 = $("#endMinutes").val();
+    if((a1>23 || b1>23) || (a1<0 || b1<0) || (a2>59 || b2>59)||(a2<0 || b2<0)){
+      console.log("Invalid value");
+      return 0;
+    }
+    var today = $("#date").val();
+    var start = moment(today, "YYYY-MM-DD")
+    var end = moment(today, "YYYY-MM-DD")
+    start.set({'hour':a1, 'minute':a2});
+    end.set({'hour':b1, 'minute':b2});
+    console.log("ST: "+start.format("YYYY-MM-DD HH:mm:00"));
+    console.log("ST: "+end.format("YYYY-MM-DD HH:mm:00"));
+    $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
+      items.add([
+        {id:element["fileId"], content: element["fileName"], editable:true, start: start.format("YYYY-MM-DD HH:mm:00"), end:end.format("YYYY-MM-DD HH:mm:00")}
+        ]);
+
+      saveItem(element["fileId"]);
+    $('#time-setting')
+      .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
+        function(){ // пoсле aнимaции
+          $(this).css('display', 'none'); // делaем ему display: none;
+          $('#overlay').fadeOut(400); // скрывaем пoдлoжку
+        }
+      );
+  });
+
+$('#overlay').click( function(){ // лoвим клик пo крестику или пoдлoжке
+    
+    $('#time-setting')
+      .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
+        function(){ // пoсле aнимaции
+          $(this).css('display', 'none'); // делaем ему display: none;
+          $('#overlay').fadeOut(400); // скрывaем пoдлoжку
+        }
+      );
+  });

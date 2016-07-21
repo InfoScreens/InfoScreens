@@ -1,0 +1,44 @@
+<style>
+
+.timeBorders{
+	display:flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+</style>
+
+
+
+
+<div class="timeBorders" style="border: 1px solid black;" >
+	<p id="startTime"></p> 
+	<p id="endTime"></p>
+
+</div>
+
+<script src="script/jquery-2.2.4.min.js"></script>
+<script type="text/javascript">
+console.log("lol")
+function startTime()
+{
+var tm=new Date();
+var h=tm.getHours();
+var m=tm.getMinutes();
+var s=tm.getSeconds();
+m=checkTime(m);
+s=checkTime(s);
+$("#startTime").html(h+":"+m+":"+s);
+$("#endTime").html(h+":"+m+":"+s);
+t=setTimeout('startTime()',500);
+}
+function checkTime(i)
+{
+if (i<10)
+{
+i="0" + i;
+}
+return i;
+}
+startTime();
+</script>
