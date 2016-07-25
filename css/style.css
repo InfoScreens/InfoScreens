@@ -173,8 +173,6 @@ body{
   background-color: #0066aa;
 }
 
-<<<<<<< HEAD
-
 .bootstrap-datetimepicker-widget{
   display:block;
 }
@@ -212,9 +210,8 @@ body{
   cursor:pointer;
   display:none; /* в oбычнoм сoстoянии её нет) */
 }
-=======
+
 /* templates */
 .template {
     display: none;
 }
->>>>>>> fef944ae8659da79d410a3f44fedfae70e5c3772
