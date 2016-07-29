@@ -49,7 +49,8 @@ CREATE TABLE `users` (
   `password` varchar(50) CHARACTER SET utf8 NOT NULL,
   `name` varchar(50) CHARACTER SET utf8 NOT NULL,
   `surname` varchar(50) CHARACTER SET utf8 NOT NULL,
-  `permissions` int(11) NOT NULL DEFAULT '0'
+  `permissions` int(11) NOT NULL DEFAULT '0',
+  `group_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -72,6 +73,26 @@ CREATE TABLE `user_devices` (
   `user_id` int(11) NOT NULL,
   `device_id` char(36) CHARACTER SET utf8 NOT NULL,
   `device_name` varchar(50) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `groups`
+--
+
+CREATE TABLE `groups` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_devices`
+--
+
+CREATE TABLE `group_devices` (
+  `group_id` int(11) NOT NULL,
+  `device_id` char(36) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -114,6 +135,20 @@ ALTER TABLE `user_devices`
   ADD KEY `device_id` (`device_id`);
 
 --
+-- Indexes for table `group_devices`
+--
+ALTER TABLE `group_devices`
+  ADD UNIQUE KEY `group_id` (`group_id`,`device_id`),
+  ADD KEY `group_id_2` (`group_id`),
+  ADD KEY `device_id` (`device_id`);
+
+--
+-- Indexes for table `groups`
+--
+ALTER TABLE `groups`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -127,3 +162,8 @@ ALTER TABLE `files`
 --
 ALTER TABLE `users`
   MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `groups`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
