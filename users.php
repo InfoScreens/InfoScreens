@@ -34,10 +34,19 @@ class Users {
 			return new Response (null, Errors::DB_QUERY_FAILED);
 		}
 
-		return new Response ($this->extract_user_info ($row));
+		$user = $this->extract_user_info ($row);
+
+		if ($auth->get_authorized_id ()->data != $id && $user["group_id"] != $utils->get_user ()->data["group_id"]) {
+			$result = $utils->check_is_super_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
+		}
+
+		return new Response ($user);
 	}
 
-	public function create ($email, $password, $name, $surname, $is_admin) {
+	public function create ($email, $password, $name, $surname, $is_admin, $group_id) {
 
 		include_once ("db_connect.php");
 
@@ -48,7 +57,7 @@ class Users {
 			return $result;
 		}
 
-		if ($is_admin) {
+		if ($is_admin || $utils->get_user ()->data["group_id"] != $group_id) {
 			$result = $utils->check_is_super_admin ();
 			if ($result->errored ()) {
 				return $result;
@@ -78,13 +87,14 @@ class Users {
 		$escaped_email = $utils->escape_sql ($email);
 		$escaped_name = $utils->escape_sql ($name);
 		$escaped_surname = $utils->escape_sql ($surname);
+		$escaped_group_id = $utils->escape_sql ($group_id);
 
 		$permissions = $is_admin ? 1 : 0;
 
 		$result = mysql_query (
 			sprintf (
-				"INSERT INTO `users` (`email`, `name`, `surname`, `permissions`) VALUES ('%s', '%s', '%s', %d);",
-				$escaped_email, $escaped_name, $escaped_surname, $permissions
+				"INSERT INTO `users` (`email`, `name`, `surname`, `permissions`, `group_id`) VALUES ('%s', '%s', '%s', %d, '%s');",
+				$escaped_email, $escaped_name, $escaped_surname, $permissions, $escaped_group_id
 			)
 		);
 		if (!$result) {
@@ -110,6 +120,19 @@ class Users {
 		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
+		}
+
+		$result = $this->get ($id);
+		if ($result->errored ()) {
+			return $result;
+		}
+		$user = $result->data;
+
+		if ($user["group_id"] != $utils->get_user ()->data["group_id"]) {
+			$result = $utils->check_is_super_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
 		}
 
 		$escaped_id = $utils->escape_sql ($id);
@@ -147,14 +170,58 @@ class Users {
 
 		global $utils;
 
-		$result = $utils->check_is_admin ();
+		$result = $utils->check_is_super_admin ();
 		if ($result->errored ()) {
 			return $result;
 		}
 
 		$result = mysql_query (
 			sprintf (
-				"SELECT `userId`, `email`, `name`, `surname`, `permissions` FROM `users`;"
+				"SELECT `userId`, `email`, `name`, `surname`, `permissions`, `group_id` FROM `users`;"
+			)
+		);
+
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
+		$list = array ();
+		while ($row = mysql_fetch_array ($result)) {
+			$list[] = $this->extract_user_info ($row);
+		}
+
+		return new Response ($list);
+	}
+
+	/**
+	 * get list of group's users
+	 *
+	 * @return Response	data is array of results from `extract_user_info` applied to all queried database rows
+	 */
+	public function get_list_of_group ($group_id) {
+
+		include_once ("db_connect.php");
+
+		global $utils;
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		if ($utils->get_user ()->data["group_id"] != $group_id) {
+			$result = $utils->check_is_super_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
+		}
+
+		$escaped_group_id = $utils->escape_sql ($group_id);
+
+		$result = mysql_query (
+			sprintf (
+				"SELECT `userId`, `email`, `name`, `surname`, `permissions`, `group_id` FROM `users` WHERE `group_id` = '%s';",
+				$escaped_group_id
 			)
 		);
 
@@ -177,7 +244,8 @@ class Users {
 			"surname" => $row["surname"],
 			"email" => $row["email"],
 			"is_admin" => $permissions & Users::PERMISSION_ADMIN,
-			"id" => $row["userId"]
+			"id" => $row["userId"],
+			"group_id" => $row["group_id"]
 		);
 		if ($info["is_admin"]) {
 			$info["is_super_admin"] = $permissions & Users::PERMISSION_SUPER_ADMIN;

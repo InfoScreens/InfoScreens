@@ -190,6 +190,50 @@ class Devices {
 	}
 
 	/**
+	 * get list of group's devices
+	 *
+	 * @return Response	data is array of results from `extract_device_info` applied to all queried database rows
+	 */
+	public function get_list_of_group ($group_id) {
+
+		include_once ("db_connect.php");
+
+		global $utils;
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		if ($utils->get_user ()->data["group_id"] != $group_id) {
+			$result = $utils->check_is_super_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
+		}
+
+		$escaped_group_id = $utils->escape_sql ($group_id);
+
+		$result = mysql_query (
+			sprintf (
+				"SELECT * FROM `devices` NATURAL JOIN (SELECT `group_id`, `device_id` `id` FROM `group_devices` WHERE `group_devices`.`group_id` = '%s') as a;",
+				$escaped_group_id
+			)
+		);
+
+		if (!$result) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
+		$list = array ();
+		while ($row = mysql_fetch_array ($result)) {
+			$list[] = $this->extract_device_info ($row);
+		}
+
+		return new Response ($list);
+	}
+
+	/**
 	 * allow usage of device by user
 	 *
 	 * @param $device_id
@@ -201,11 +245,24 @@ class Devices {
 
 		include_once ("db_connect.php");
 
-		global $utils;
+		global $utils, $users;
 
 		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
+		}
+
+		$result = $users->get ($user_id);
+		if ($result->errored ()) {
+			return $result;
+		}
+		$user = $result->data;
+
+		if ($user["group_id"] != $utils->get_user ()->data["group_id"]) {
+			$result = $utils->check_is_super_admin ();
+			if ($result->errored ()) {
+				return $result;
+			}
 		}
 
 		$escaped_user_id = $utils->escape_sql ($user_id);
@@ -228,6 +285,55 @@ class Devices {
 				sprintf (
 					"DELETE FROM `user_devices` WHERE `user_id` = '%s' AND `device_id` = '%s';",
 					$escaped_user_id,
+					$escaped_device_id
+				)
+			);
+			if (!$result) {
+				return new Response (null, Errors::DB_QUERY_FAILED);
+			}
+		}
+
+		return new Response (null);
+	}
+
+	/**
+	 * allow usage of device by group
+	 *
+	 * @param $device_id
+	 * @param $group_id
+	 * @param $allow
+	 * @return Response
+	 */
+	public function allow_to_group ($device_id, $group_id, $allow) {
+
+		include_once ("db_connect.php");
+
+		global $utils;
+
+		$result = $utils->check_is_super_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		$escaped_group_id = $utils->escape_sql ($group_id);
+		$escaped_device_id = $utils->escape_sql ($device_id);
+
+		if ($allow) {
+			$result = mysql_query (
+				sprintf (
+					"INSERT INTO `group_devices` (`group_id`, `device_id`) VALUES ('%s', '%s');",
+					$escaped_group_id,
+					$escaped_device_id
+				)
+			);
+			if (!$result) {
+				return new Response (null, Errors::DB_QUERY_FAILED);
+			}
+		} else {
+			$result = mysql_query (
+				sprintf (
+					"DELETE FROM `group_devices` WHERE `group_id` = '%s' AND `device_id` = '%s';",
+					$escaped_group_id,
 					$escaped_device_id
 				)
 			);

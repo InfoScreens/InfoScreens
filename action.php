@@ -64,6 +64,7 @@ if(isset($_GET['uploadfiles'])){
 include_once ("users.php");
 include_once ("auth.php");
 include_once ("devices.php");
+include_once ("groups.php");
 
 /* TODO: make more strict, remove default values and return errored Response */
 /**
@@ -113,7 +114,8 @@ if (isset ($_POST["action"])) {
 					"password" => "",
 					"name" => "",
 					"surname" => "",
-					"is_admin" => 0
+					"is_admin" => 0,
+					"group_id" => ""
 				)
 			);
 			// create user
@@ -122,9 +124,11 @@ if (isset ($_POST["action"])) {
 				$parameters["password"],
 				$parameters["name"],
 				$parameters["surname"],
-				$parameters["is_admin"]
+				$parameters["is_admin"],
+				$parameters["group_id"]
 			);
 			break;
+		/* TODO: remove typo in word "current" ("currRent") */
 		case "get_currrent_user_info":
 			// if auhtorized
 			$result = $auth->get_authorized_id ();
@@ -198,11 +202,97 @@ if (isset ($_POST["action"])) {
 					"name" => ""
 				)
 			);
-			// allow device to user
+			// set user device name
 			$response = $devices->set_name_for_user (
 				$parameters["device_id"],
 				$parameters["user_id"],
 				$parameters["name"]
+			);
+			break;
+		case "get_groups_list":
+			// get group list
+			$response = $groups->get_list ();
+			break;
+		case "create_group":
+			// get group list
+			$response = $groups->create ();
+			break;
+		case "set_group_name":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"group_id" => "",
+					"name" => ""
+				)
+			);
+			// set group name
+			$response = $groups->set_name (
+				$parameters["group_id"],
+				$parameters["name"]
+			);
+			break;
+		case "get_group":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"group_id" => ""
+				)
+			);
+			// set group name
+			$response = $groups->get (
+				$parameters["group_id"]
+			);
+			break;
+		case "get_list_of_group_users":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"group_id" => "",
+				)
+			);
+			// get list of group users
+			$response = $users->get_list_of_group (
+				$parameters["group_id"]
+			);
+			break;
+		case "allow_device_to_group":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"device_id" => "",
+					"group_id" => "",
+					"allow" => 0
+				)
+			);
+			// allow device to group
+			$response = $devices->allow_to_group (
+				$parameters["device_id"],
+				$parameters["group_id"],
+				intval ($parameters["allow"])
+			);
+			break;
+		case "get_list_of_group_devices":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"group_id" => "",
+				)
+			);
+			// get list of group devices
+			$response = $devices->get_list_of_group (
+				$parameters["group_id"]
+			);
+			break;
+		case "get_user":
+			// extract action parameters
+			$parameters = get_action_parameters (
+				array (
+					"user_id" => ""
+				)
+			);
+			// set group name
+			$response = $users->get (
+				$parameters["user_id"]
 			);
 			break;
 		default:

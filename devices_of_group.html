@@ -17,12 +17,10 @@
     <div class="form-group">
         <a href="/admin.php" class="btn btn-default">Admin panel</a>
     </div>
-    <div class="well well-sm">
-        <div class="form-group">
-            <strong id="user_info_name"></strong>
-        </div>
-        <div class="form-group">
-            <i id="user_info_email"></i>
+
+    <div class="well well-sm remove_if_not_super_admin">
+        <div>
+            <strong id="group_name"></strong>
         </div>
     </div>
 
@@ -30,22 +28,14 @@
 
         <div id="error_text" class="alert alert-danger" style="display: none;"></div>
 
-        <table id="devices_of_user_list_table" class="table table-bordered">
+        <table id="devices_of_group_list_table" class="table table-bordered">
             <tr>
                 <th>Device Id</th>
-                <th>Device name</th>
-                <th class="remove_if_not_admin">Allow</th>
+                <th class="remove_if_not_super_admin">Allow</th>
             </tr>
-            <tr class="template device_of_user_row">
+            <tr class="template device_of_group_row">
                 <td class="device_id_column"></td>
-                <td>
-                    <form class="device_name_form">
-                        <input type="hidden" name="device_id" />
-                        <input type="hidden" name="name_old" />
-                        <input type="text" name="name" />
-                    </form>
-                </td>
-                <td class="remove_if_not_admin">
+                <td class="remove_if_not_super_admin">
                     <form class="device_allow_form">
                         <input type="hidden" name="device_id" />
                         <input type="hidden" name="allow_old" />
@@ -76,8 +66,8 @@
         });
         $('.selectpicker').selectpicker();
 
-        var user_id = null,
-                is_admin,
+        var group_id = null,
+                is_super_admin,
                 all_devices;
 
         var get_parameters = {};
@@ -94,8 +84,8 @@
                 }
             }
         }
-        if (get_parameters.hasOwnProperty ("user_id")) {
-            user_id = get_parameters.user_id;
+        if (get_parameters.hasOwnProperty ("group_id")) {
+            group_id = get_parameters.group_id;
         }
 
         perform_action (
@@ -107,63 +97,63 @@
                     } else {
                         var user = response.data;
 
-                        if (user_id == null) {
-                            user_id = user.id;
+                        if (!user.is_admin) {
+                            window.location = "admin.php";
                         }
 
-                        $("#user_info_name").text (user.name + " " + user.surname);
-                        $("#user_info_email").text (user.email);
+                        if (group_id == null) {
+                            group_id = user.group_id;
+                        }
 
-                        is_admin = user.is_admin;
-                        var temp = $(".remove_if_not_admin");
-                        if (is_admin) {
-                            temp.removeClass ("remove_if_not_admin");
+                        is_super_admin = user.is_admin && user.is_super_admin;
+                        var temp = $(".remove_if_not_super_admin");
+                        if (is_super_admin) {
+                            temp.removeClass ("remove_if_not_super_admin");
                             perform_action (
-                                    "get_user",
-                                    {
-                                        user_id: user_id
-                                    },
+                                    "get_devices_list",
+                                    null,
                                     function (response) {
                                         if (response.errored ()) {
                                             $("#error_text")
                                                     .text(get_error_text(response.error))
                                                     .show();
                                         } else {
-                                            var user = response.data;
-                                            perform_action (
-                                                    "get_list_of_group_devices",
-                                                    {
-                                                        group_id: user.group_id
-                                                    },
-                                                    function (response) {
-                                                        if (response.errored ()) {
-                                                            $("#error_text")
-                                                                    .text(get_error_text(response.error))
-                                                                    .show();
-                                                        } else {
-                                                            all_devices = response.data;
-                                                            update_devices_of_users_list ();
-                                                        }
-                                                    }
-                                            );
+                                            all_devices = response.data;
+                                            update_devices_of_group_list ();
+                                        }
+                                    }
+                            );
+                            perform_action (
+                                    "get_group",
+                                    {
+                                        group_id: group_id
+                                    },
+                                    function (response) {
+                                        if (response.errored ()) {
+                                            $("#error_text")
+                                                    .text (get_error_text (response.error))
+                                                    .show ();
+                                        } else {
+                                            var group = response.data;
+                                            $("#group_name").text (group.name);
                                         }
                                     }
                             );
                         } else {
                             temp.remove ();
-                            update_devices_of_users_list ();
+                            update_devices_of_group_list ();
                         }
 
                     }
                 }
         );
 
-        function update_devices_of_users_list () {
+        function update_devices_of_group_list () {
 
             perform_action (
-                    "get_list_of_user_devices",
+                    "get_list_of_group_devices",
                     {
-                        user_id: user_id
+                        group_id: group_id
                     },
                     function (response) {
 
@@ -177,20 +167,20 @@
 
                             $("#error_text").hide ();
 
-                            var row_template = $("#devices_of_user_list_table tr.template.device_of_user_row"),
+                            var row_template = $("#devices_of_group_list_table tr.template.device_of_group_row"),
                                     container = row_template.parent (),
-                                    user_devices_map = {};
+                                    group_devices_map = {};
 
                             for (var i in response.data) {
                                 var device = response.data[i];
-                                user_devices_map[device.device_specific.id] = device;
+                                group_devices_map[device.id] = device;
                             }
 
-                            if (!is_admin) {
+                            if (!is_super_admin) {
                                 all_devices = [];
                                 for (var i in response.data) {
                                     var device = response.data[i];
-                                    all_devices.push ({id: device.device_specific.id});
+                                    all_devices.push ({id: device.id});
                                 }
                             }
 
@@ -203,44 +193,12 @@
                                                 .clone ()
                                                 .removeClass ("template")
                                                 .addClass ("can_be_removed"),
-                                        is_user_device = user_devices_map.hasOwnProperty (device.id),
-                                        device_user_info = is_user_device ? user_devices_map[device.id] : null;
+                                        is_user_device = group_devices_map.hasOwnProperty (device.id);
 
-                                var form = row.find (".device_name_form")[0];
-                                if (is_user_device) {
-                                    form.name.value
-                                            = form.name_old.value
-                                            = device_user_info.user_specific.name;
-                                    form.device_id.value = device.id;
-                                    $(form.name).change (function () {
-                                        var form = this.parentElement;
-                                        perform_action (
-                                                "set_device_name_for_user",
-                                                {
-                                                    name: form.name.value,
-                                                    user_id: user_id,
-                                                    device_id: form.device_id.value
-                                                },
-                                                function (response) {
-                                                    if (response.errored ()) {
-                                                        $("#error_text")
-                                                                .text (get_error_text (response.error))
-                                                                .show ();
-                                                        form.name.value = form.name_old.value;
-                                                    } else {
-                                                        $("#error_text").hide ();
-                                                        form.name_old.value = form.name.value;
-                                                    }
-                                                }
-                                        );
-                                    });
-                                } else {
-                                    form.name.disabled = true;
-                                }
                                 row.find (".device_id_column").text (device.id);
 
-                                if (is_admin) {
-                                    form = row.find (".device_allow_form")[0];
+                                if (is_super_admin) {
+                                    var form = row.find (".device_allow_form")[0];
                                     form.allow.checked
                                             = form.allow_old.checked
                                             = is_user_device;
@@ -248,10 +206,10 @@
                                     $(form.allow).change (function () {
                                         var form = this.parentElement;
                                         perform_action (
-                                                "allow_device_to_user",
+                                                "allow_device_to_group",
                                                 {
                                                     allow: form.allow.checked,
-                                                    user_id: user_id,
+                                                    group_id: group_id,
                                                     device_id: form.device_id.value
                                                 },
                                                 function (response) {
@@ -262,7 +220,7 @@
                                                         form.allow.checked = form.allow_old.checked;
                                                     } else {
                                                         $("#error_text").hide ();
-                                                        update_devices_of_users_list ();
+                                                        update_devices_of_group_list ();
                                                     }
                                                 }
                                         );
@@ -275,8 +233,6 @@
                     }
             );
         }
-
-        update_devices_of_users_list ();
     });
 </script>
 

@@ -19,6 +19,12 @@
 				<a href="/add_user.html" class="btn btn-default">Create user</a>
 			</div>
 
+			<div class="well well-sm" id="group_info">
+				<div>
+					<strong id="group_name"></strong>
+				</div>
+			</div>
+
 			<div class="form-group">
 
 				<div id="error_text" class="alert alert-danger" style="display: none;"></div>
@@ -71,6 +77,63 @@
 
 				check_user_authorized (true);
 
+				var group_id = null;
+
+				var get_parameters = {};
+				if (location.href.indexOf ("?") != -1) {
+					var query = location.href.substr (location.href.indexOf ("?") + 1);
+					if (query.indexOf ("#") != -1) {
+						query = query.substr (0, query.indexOf ("#"));
+					}
+					var pairs = query.split ("&");
+					for (var i in pairs) {
+						var pair = pairs[i].split ("=");
+						if (pair.length > 0) {
+							get_parameters[pair[0]] = pair.length >= 2 ? pair[1] : "";
+						}
+					}
+				}
+				if (get_parameters.hasOwnProperty ("group_id")) {
+					group_id = get_parameters.group_id;
+				}
+
+				perform_action (
+						"get_currrent_user_info",
+						null,
+						function (response) {
+							if (!response.errored ()) {
+								var user = response.data;
+
+								if (group_id == null) {
+									group_id = user.group_id;
+								}
+
+								if (user.is_admin && user.is_super_admin) {
+									perform_action (
+											"get_group",
+											{
+												group_id: group_id
+											},
+											function (response) {
+												if (response.errored ()) {
+													$("#error_text")
+															.text (get_error_text (response.error))
+															.show ();
+												} else {
+													var group = response.data;
+													$("#group_name").text (group.name);
+													update_user_list ();
+												}
+											}
+									);
+								} else {
+									$("#group_info").remove ();
+									update_user_list ();
+								}
+							}
+						}
+				);
+
 				function buy (submit_event) {
 
 					submit_event.preventDefault ();
@@ -102,48 +165,53 @@
 					);
 				}
 
-				perform_action (
-					"get_users_list",
-					null,
-					function (response) {
+				function update_user_list () {
 
-						if (response.errored ()) {
+					perform_action (
+							"get_list_of_group_users",
+							{
+								group_id: group_id
+							},
+							function (response) {
 
-							$("#error_text")
-								.text (get_error_text (response.error))
-								.show ();
+								if (response.errored ()) {
 
-						} else {
+									$("#error_text")
+											.text (get_error_text (response.error))
+											.show ();
 
-							$("#error_text").hide ();
+								} else {
 
-							var row_template = $("#users_list_table tr.template.user_info_row"),
-								container = row_template.parent (),
-								users_list = response.data;
-							for (var i in users_list) {
-								var user = users_list[i],
-									row = row_template
-										.clone ()
-										.removeClass ("template"),
-									permissions = user.is_admin ? 1 : 0,
-									permissions_form = row.find (".user_info_permissions_form")[0];
+									$("#error_text").hide ();
 
-								row.find (".user_info_column_email").text (user.email);
-								row.find (".user_info_column_name").text (user.name);
-								row.find (".user_info_column_surname").text (user.surname);
+									var row_template = $("#users_list_table tr.template.user_info_row"),
+											container = row_template.parent (),
+											users_list = response.data;
+									for (var i in users_list) {
+										var user = users_list[i],
+												row = row_template
+														.clone ()
+														.removeClass ("template"),
+												permissions = user.is_admin ? 1 : 0,
+												permissions_form = row.find (".user_info_permissions_form")[0];
 
-								$(permissions_form).submit (buy);
+										row.find (".user_info_column_email").text (user.email);
+										row.find (".user_info_column_name").text (user.name);
+										row.find (".user_info_column_surname").text (user.surname);
 
-								permissions_form.user_id.value = user.id;
-								permissions_form.is_admin.value
-									= permissions_form.is_admin_old.value
-									= permissions;
+										$(permissions_form).submit (buy);
 
-								container.append (row);
+										permissions_form.user_id.value = user.id;
+										permissions_form.is_admin.value
+												= permissions_form.is_admin_old.value
+												= permissions;
+
+										container.append (row);
+									}
+								}
 							}
-						}
-					}
-				);
+					);
+				}
 			});
 		</script>
 

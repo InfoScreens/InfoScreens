@@ -50,6 +50,13 @@
 						</select>
 					</td>
 				</tr>
+				<tr class="group_id_row">
+					<th>Group</th>
+					<td>
+						<select name="group_id">
+						</select>
+					</td>
+				</tr>
 			</table>
 			<input type="submit" value="Create" class="btn btn-default" />
 		</form>
@@ -78,6 +85,49 @@
 
 		check_user_authorized (true);
 
+		perform_action (
+				"get_currrent_user_info",
+				null,
+				function (response) {
+					if (!response.errored ()) {
+						var user = response.data;
+						if (user.is_admin && user.is_super_admin) {
+							perform_action (
+									"get_groups_list",
+									null,
+									function (response) {
+										if (response.errored ()) {
+											$("#error_text")
+													.text (get_error_text (response.error))
+													.show ();
+										} else {
+											var groups = response.data;
+											var container = $($("#add_user_form")[0].group_id);
+											for (var i in groups) {
+												var group = groups[i];
+												container.append ($("<option>")
+														.val (group.id)
+														.text (group.name)
+												);
+											}
+										}
+									}
+							);
+						} else {
+							var form = $("#add_user_form");
+							form.find ("tr.group_id_row").remove ();
+							form.append ($("<input>")
+									.attr ({
+										type: "hidden",
+										name: "group_id"
+									})
+									.val (user.group_id)
+							);
+						}
+					}
+				}
+		);
+
 		$("#add_user_form").submit (function (event) {
 
 			event.preventDefault ();
@@ -91,7 +141,8 @@
 					password: form.password.value,
 					name: form.name.value,
 					surname: form.surname.value,
-					is_admin: form.is_admin.value
+					is_admin: form.is_admin.value,
+					group_id: form.group_id.value
 				},
 				function (response) {
 

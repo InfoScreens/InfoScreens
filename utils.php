@@ -99,6 +99,18 @@ class Utils {
 
 		return new Response (null);
 	}
+
+	public function get_user () {
+
+		global $auth, $users;
+
+		$result = $this->check_is_user ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		return $users->get ($auth->get_authorized_id ()->data);
+	}
 }
 
 $utils = new Utils ();

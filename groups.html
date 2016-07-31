@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Groups</title>
+    <meta charset="utf8">
+    <link type="text/css" rel="stylesheet" href="script/bootstrap-3.3.6-dist/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="css/style.css">
+    <link href="script/vis/dist/vis.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link href="css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link href="css/bootstrap-select.min.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="container">
+    <div class="form-group">
+        <a href="/admin.php" class="btn btn-default">Admin panel</a>
+        <button id="create_group" class="btn btn-default">Create group</button>
+    </div>
+
+    <div class="form-group">
+
+        <div id="error_text" class="alert alert-danger" style="display: none;"></div>
+
+        <table id="groups_list_table" class="table table-bordered">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Users</th>
+                <th>Devices</th>
+            </tr>
+            <tr class="template group_row">
+                <td class="device_id_column">
+                </td>
+                <td>
+                    <form class="group_name_form">
+                        <input type="hidden" name="group_id" />
+                        <input type="hidden" name="name_old" />
+                        <input type="text" name="name" />
+                    </form>
+                </td>
+                <td>
+                    <a class="users_link">Users</a>
+                </td>
+                <td>
+                    <a class="devices_link">Devices</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script src="script/jquery-2.2.4.min.js"></script>
+<script src="script/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+
+<script src="script/moment-with-locales.js"></script>
+<script src="script/bootstrap-datetimepicker.js"></script>
+
+<script src="script/bootstrap-3.3.6-dist/js/bootstrap.js"></script>
+<script src="script/bootstrap-select.min.js"></script>
+
+<script src="script/x.js"></script>
+<script src="script/common.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker').datetimepicker({
+            format:'DD.MM.YYYY'
+        });
+        $('.selectpicker').selectpicker();
+
+        perform_action (
+                "get_currrent_user_info",
+                null,
+                function (response) {
+                    if (response.errored ()) {
+                        window.location = "login.php";
+                    } else {
+                        var user = response.data;
+                        if (!user.is_admin || !user.is_super_admin) {
+                            window.location = "admin.php";
+                        }
+                    }
+                }
+        );
+
+        function update_groups_list () {
+
+            perform_action (
+                    "get_groups_list",
+                    null,
+                    function (response) {
+
+                        if (response.errored ()) {
+
+                            $("#error_text")
+                                    .text (get_error_text (response.error))
+                                    .show ();
+
+                        } else {
+
+                            $("#error_text").hide ();
+
+                            var row_template = $("#groups_list_table tr.template.group_row"),
+                                    container = row_template.parent (),
+                                    groups = response.data;
+
+                            container.find ("tr.can_be_removed")
+                                    .remove ();
+
+                            for (var i in groups) {
+                                var group = groups[i],
+                                        row = row_template
+                                                .clone ()
+                                                .removeClass ("template")
+                                                .addClass ("can_be_removed");
+
+                                var form = row.find (".group_name_form")[0];
+                                form.name.value
+                                        = form.name_old.value
+                                        = group.name;
+                                form.group_id.value = group.id;
+                                $(form.name).change (function () {
+                                    var form = this.parentElement;
+                                    perform_action (
+                                            "set_group_name",
+                                            {
+                                                name: form.name.value,
+                                                group_id: form.group_id.value
+                                            },
+                                            function (response) {
+                                                if (response.errored ()) {
+                                                    $("#error_text")
+                                                            .text (get_error_text (response.error))
+                                                            .show ();
+                                                    form.name.value = form.name_old.value;
+                                                } else {
+                                                    $("#error_text").hide ();
+                                                    form.name_old.value = form.name.value;
+                                                }
+                                            }
+                                    );
+                                });
+                                row.find (".device_id_column").text (group.id);
+                                row.find (".users_link")[0].href = "users_list.html?group_id=" + group.id;
+                                row.find (".devices_link")[0].href = "devices_of_group.html?group_id=" + group.id;
+
+                                container.append (row);
+                            }
+                        }
+                    }
+            );
+        }
+
+        $("#create_group").click (function () {
+            perform_action (
+                    "create_group",
+                    null,
+                    function (response) {
+
+                        if (response.errored ()) {
+
+                            $("#error_text")
+                                    .text (get_error_text (response.error))
+                                    .show ();
+
+                        } else {
+
+                            $("#error_text").hide ();
+                            update_groups_list ();
+
+                        }
+                    }
+            );
+        });
+
+        update_groups_list ();
+    });
+</script>
+
+</body>
+</html>
