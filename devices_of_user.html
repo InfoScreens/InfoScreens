@@ -109,10 +109,9 @@
 
                         if (user_id == null) {
                             user_id = user.id;
+                            $("#user_info_name").text (user.name + " " + user.surname);
+                            $("#user_info_email").text (user.email);
                         }
-
-                        $("#user_info_name").text (user.name + " " + user.surname);
-                        $("#user_info_email").text (user.email);
 
                         is_admin = user.is_admin;
                         var temp = $(".remove_if_not_admin");
@@ -130,6 +129,10 @@
                                                     .show();
                                         } else {
                                             var user = response.data;
+
+                                            $("#user_info_name").text (user.name + " " + user.surname);
+                                            $("#user_info_email").text (user.email);
+
                                             perform_action (
                                                     "get_list_of_group_devices",
                                                     {
