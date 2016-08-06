@@ -13,7 +13,7 @@ function get_schedule ($device_id) {
 	$escaped_date = $utils->escape_sql (date ("Y-m-d"));
 
 	$result = mysql_query (
-		$sql = sprintf (
+		sprintf (
 			"SELECT * FROM `schedule` NATURAL JOIN `files` WHERE `device` = '%s' AND `date` = '%s';",
 			$escaped_device_id,
 			$escaped_date
@@ -40,9 +40,7 @@ function get_schedule ($device_id) {
 			)
 		);
 	}
-
-	return new Response (array ($sql, $items));
-	#return new Response ($items);
+	return new Response ($items);
 }
 
 function get_param ($name, $default = "", $from = null) {
