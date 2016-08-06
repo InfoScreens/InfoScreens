@@ -40,8 +40,6 @@ if (!$is_authorized) {
 	<div class="col-lg-3 action-panel">
 		<h3>Action panel</h3>
 		<select class="form-control selectpicker" id="monSelect">
-			<option value="1"> Mon 1 </option>
-			<option value="2"> Mon 2 </option>
 		</select>
 		<br>
 		<div class='input-group date' id='datetimepicker'>
@@ -168,10 +166,46 @@ if (!$is_authorized) {
                 	defaultDate: date
                 });
                 $('.selectpicker').selectpicker();
+
+				perform_action (
+					"get_currrent_user_info",
+					null,
+					function (response) {
+						if (response.errored ()) {
+							window.location = "login.php";
+						} else {
+							var user_id = response.data.id;
+							perform_action (
+								"get_list_of_user_devices",
+								{
+									user_id: user_id
+								},
+								function (response) {
+									if (response.errored ()) {
+										alert (response.error + ", " + get_error_text (response.error));
+									} else {
+										var devices = response.data,
+											container = $("#monSelect");
+										for (var i in devices) {
+											var device = devices[i];
+											container.append (
+												$("<option>")
+													.text (device.user_specific.name)
+													.val (device.device_specific.id)
+											);
+										}
+										container.selectpicker ("refresh");
+									}
+								}
+							);
+						}
+					}
+				);
             });
         </script>
     
 	<script src="script/script.js"></script>
+	<script src="script/x.js"></script>
 	<script>
 	
 
