@@ -17,12 +17,17 @@
     <div class="form-group">
         <a href="/admin.php" class="btn btn-default">Admin panel</a>
     </div>
-    <div class="well well-sm">
-        <div class="form-group">
-            <strong id="user_info_name"></strong>
-        </div>
-        <div class="form-group">
-            <i id="user_info_email"></i>
+    <div class="well well-sm remove_if_not_admin" style="overflow: hidden;">
+        <a id="group_devices" class="btn btn-default pull-right">Group devices</a>
+        <a id="group_users" class="btn btn-default pull-right">Group users</a>
+        <strong id="group_name" class="pull-right remove_if_not_super_admin"></strong>
+        <div>
+            <div class="form-group">
+                <strong id="user_info_name"></strong>
+            </div>
+            <div>
+                <i id="user_info_email"></i>
+            </div>
         </div>
     </div>
 
@@ -78,6 +83,7 @@
 
         var user_id = null,
                 is_admin,
+                is_super_admin,
                 all_devices;
 
         var get_parameters = {};
@@ -114,6 +120,7 @@
                         }
 
                         is_admin = user.is_admin;
+                        is_super_admin = is_admin && user.is_super_admin;
                         var temp = $(".remove_if_not_admin");
                         if (is_admin) {
                             temp.removeClass ("remove_if_not_admin");
@@ -129,6 +136,9 @@
                                                     .show();
                                         } else {
                                             var user = response.data;
+
+                                            $("#group_devices")[0].href = "devices_of_group.html?group_id=" + window.escape (user.group_id);
+                                            $("#group_users")[0].href = "users_list.html?group_id=" + window.escape (user.group_id);
 
                                             $("#user_info_name").text (user.name + " " + user.surname);
                                             $("#user_info_email").text (user.email);
@@ -149,6 +159,29 @@
                                                         }
                                                     }
                                             );
+
+                                            var temp = $(".remove_if_not_super_admin");
+                                            if (is_super_admin) {
+                                                temp.removeClass ("remove_if_not_super_admin");
+                                                perform_action (
+                                                        "get_group",
+                                                        {
+                                                            group_id: user.group_id
+                                                        },
+                                                        function (response) {
+                                                            if (response.errored ()) {
+                                                                $("#error_text")
+                                                                        .text(get_error_text(response.error))
+                                                                        .show();
+                                                            } else {
+                                                                var group = response.data;
+                                                                $("#group_name").text (group.name);
+                                                            }
+                                                        }
+                                                );
+                                            } else {
+                                                temp.remove ();
+                                            }
                                         }
                                     }
                             );

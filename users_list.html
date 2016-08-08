@@ -19,10 +19,9 @@
 				<a href="/add_user.html" class="btn btn-default">Create user</a>
 			</div>
 
-			<div class="well well-sm remove_if_not_super_admin" id="group_info">
-				<div>
-					<strong id="group_name"></strong>
-				</div>
+			<div class="well well-sm" id="group_info" style="overflow: hidden;">
+				<strong id="group_name" class="remove_if_not_super_admin"></strong>
+				<a id="group_devices" class="btn btn-default pull-right">Group devices</a>
 			</div>
 
 			<div class="form-group">
@@ -34,12 +33,16 @@
 						<th>Email</th>
 						<th>Name</th>
 						<th>Surname</th>
+						<th>Devices</th>
 						<th class="remove_if_not_super_admin">Permissions</th>
 					</tr>
 					<tr class="template user_info_row">
 						<td class="user_info_column_email"></td>
 						<td class="user_info_column_name"></td>
 						<td class="user_info_column_surname"></td>
+						<td>
+							<a class="user_devices">Devices</a>
+						</td>
 						<td class="remove_if_not_super_admin">
 							<form class="user_info_permissions_form">
 								<input type="hidden" name="user_id" />
@@ -109,6 +112,8 @@
 									group_id = user.group_id;
 								}
 
+								$("#group_devices")[0].href = "devices_of_group.html?group_id=" + window.escape (group_id);
+
 								is_super_admin = user.is_admin && user.is_super_admin;
 								var temp = $(".remove_if_not_super_admin");
 								if (is_super_admin) {
@@ -170,6 +175,7 @@
 										row.find (".user_info_column_email").text (user.email);
 										row.find (".user_info_column_name").text (user.name);
 										row.find (".user_info_column_surname").text (user.surname);
+										row.find (".user_devices")[0].href = "devices_of_user.html?user_id=" + window.escape (user.id);
 
 										if (is_super_admin) {
 											var permissions_form = row.find (".user_info_permissions_form")[0];

@@ -18,10 +18,9 @@
         <a href="/admin.php" class="btn btn-default">Admin panel</a>
     </div>
 
-    <div class="well well-sm remove_if_not_super_admin">
-        <div>
-            <strong id="group_name"></strong>
-        </div>
+    <div class="well well-sm" style="overflow: hidden;">
+        <strong id="group_name" class="remove_if_not_super_admin"></strong>
+        <a id="group_users" class="btn btn-default pull-right">Group users</a>
     </div>
 
     <div class="form-group">
@@ -104,6 +103,8 @@
                         if (group_id == null) {
                             group_id = user.group_id;
                         }
+
+                        $("#group_users")[0].href = "users_list.html?group_id=" + window.escape (group_id);
 
                         is_super_admin = user.is_admin && user.is_super_admin;
                         var temp = $(".remove_if_not_super_admin");
