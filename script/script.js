@@ -419,13 +419,12 @@ function openSchedule(){
     contentType:false,
     success:function(respond, textStatus, jqXHR){
       console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
-      var response = respond.slice(2, respond.length-2);
-      response = response.split('},{');
+      var response = JSON.parse (respond);
       var item;
+      items.clear ();
       for(var i =0; i<response.length; i++){
         //console.log("resp"+i+": "+response[i]);
-        item = "{"+response[i]+"}";
-        item = $.parseJSON(item);
+        item = response[i];
         console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
         //items.add("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
         items.add([{id:item.itemId, content:item.itemId, start: item.startTime, end: item.endTime}]);
