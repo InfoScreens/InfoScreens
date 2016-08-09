@@ -296,7 +296,7 @@ if (isset ($_POST["action"])) {
 			);
 			break;
 		default:
-			$response = new Response (Errors::UNKNOWN_ACTION);
+			$response = new Response (null, Errors::UNKNOWN_ACTION);
 	}
 
 	// send back result in json
