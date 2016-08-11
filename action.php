@@ -128,8 +128,7 @@ if (isset ($_POST["action"])) {
 				$parameters["group_id"]
 			);
 			break;
-		/* TODO: remove typo in word "current" ("currRent") */
-		case "get_currrent_user_info":
+		case "get_current_user_info":
 			// if auhtorized
 			$result = $auth->get_authorized_id ();
 			if (!$result->errored ()) {

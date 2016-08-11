@@ -153,7 +153,7 @@
                 $('.selectpicker').selectpicker();
 
 				perform_action (
-					"get_currrent_user_info",
+					"get_current_user_info",
 					null,
 					function (response) {
 						if (response.errored ()) {
