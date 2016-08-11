@@ -85,11 +85,11 @@ if (!$is_authorized) {
 		<h3>Work area</h3>
 
 		<!--<div class="element"></div>-->
-		<div class="element pdf" data-title="Имя файла" style=""><img src="files/thumbnails/pres.pdf.jpg"></div>
+		<div class="element pdf" data-title="Имя файла" style=""><!--<img src="files/thumbnails/pres.pdf.jpg">--></div>
 		<div class="element add-element"></div>
 
 		<form id="addFiles" name="addFiles">
-			<input type="file" multiple="multiple" id="addFile" name="file">
+			<input type="file"  id="addFile" name="file">
 			</form>
 
 
@@ -142,7 +142,7 @@ if (!$is_authorized) {
 				</div>		
 			</div>
 			<div class="row">
-			<button type="button" class="btn btn-primary btn-sm btn-block" id="addItemBtn">Добавить/Add</button>
+			<button type="submit" class="btn btn-primary btn-sm btn-block" id="addItemBtn">Добавить/Add</button>
 
 			<!--<button type="button" class="btn .btn-info .btn-block" id="addItem">Добавить/Add</button>-->
 			</div>
