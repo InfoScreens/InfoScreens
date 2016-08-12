@@ -258,6 +258,11 @@ class Devices {
 		}
 		$user = $result->data;
 
+		$result = $this->check_is_device_of_group ($device_id, $user["group_id"]);
+		if ($result->errored ()) {
+			return $result;
+		}
+
 		if ($user["group_id"] != $utils->get_user ()->data["group_id"]) {
 			$result = $utils->check_is_super_admin ();
 			if ($result->errored ()) {
@@ -404,6 +409,40 @@ class Devices {
 				"name" => $row["device_name"]
 			)
 		);
+	}
+
+	public function check_is_device_of_group ($device_id, $group_id) {
+
+		include_once ("db_connect.php");
+
+		global $utils;
+
+		$escaped_group_id = $utils->escape_sql ($group_id);
+		$escaped_device_id = $utils->escape_sql ($device_id);
+
+		$result = $utils->check_is_admin ();
+		if ($result->errored ()) {
+			return $result;
+		}
+
+		$result = mysql_query (
+			sprintf (
+				"SELECT COUNT(*) n FROM `group_devices` WHERE `group_id` = '%s' AND `device_id` = '%s';",
+				$escaped_group_id,
+				$escaped_device_id
+			)
+		);
+		$row = mysql_fetch_array ($result);
+
+		if (!$row) {
+			return new Response (null, Errors::DB_QUERY_FAILED);
+		}
+
+		if (intval ($row["n"]) <= 0) {
+			return new Response (null, Errors::NOT_DEVICE_OF_GROUP);
+		}
+
+		return new Response (null);
 	}
 }
 

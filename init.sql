@@ -98,6 +98,22 @@ CREATE TABLE `group_devices` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `schedule`
+--
+
+CREATE TABLE IF NOT EXISTS `schedule` (
+  `itemId` int(11) NOT NULL AUTO_INCREMENT,
+  `device` char(36) CHARACTER SET utf8 NOT NULL,
+  `date` date NOT NULL,
+  `fileId` int(11) NOT NULL,
+  `startTime` varchar(20) NOT NULL,
+  `endTime` varchar(20) NOT NULL,
+  PRIMARY KEY (`itemId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35 ;
+
+-- --------------------------------------------------------
+
+--
 -- Indexes for dumped tables
 --
 

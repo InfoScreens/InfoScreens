@@ -12,7 +12,8 @@ var Errors = {
     DEVICE_NOT_EXIST: 9,
     DEVICE_ALREADY_ACTIVATED: 10,
     NOT_ADMIN: 11,
-    NOT_SUPER_ADMIN: 12
+    NOT_SUPER_ADMIN: 12,
+    NOT_DEVICE_OF_GROUP: 13
 };
 
 var ErrorTexts = {
@@ -24,7 +25,8 @@ var ErrorTexts = {
     5: "Surname is empty",
     6: "AJAX error",
     11: "Not admin",
-    12: "Not super admin"
+    12: "Not super admin",
+    13: "Not device of group"
 };
 
 function get_error_text (error) {

@@ -93,7 +93,7 @@ var container = document.getElementById("timeline");
     onRemove: function(item, callback){
       //console.log(item);
       var data = new FormData();
-      data.append("fileId", item.id);
+      data.append("itemId", item.id);
       console.log(data);
       $.ajax({
         url:'../action.php?removeItem',
@@ -110,7 +110,31 @@ var container = document.getElementById("timeline");
           console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
         }
       })
-      
+      items.remove(item);
+    },
+    onMove: function(item, callback){
+
+      var start = moment(item.start);
+      var end = moment(item.end);
+      var data = new FormData();
+      data.append("itemId", item.id);
+      data.append("start", start.format('YYYY-MM-DD HH:mm:ss'));
+      data.append("end", end.format('YYYY-MM-DD HH:mm:ss'));
+      $.ajax({
+        url:'../action.php?updateSchedule',
+        method:'POST',
+        data:data,
+        cache:false,
+        dataType:'text',
+        processData:false,
+        contentType:false,
+        success:function(respond, textStatus, jqXHR){
+          console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+          console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
+        }
+      })//*/
     },
 
 
@@ -440,15 +464,12 @@ function openSchedule(){
     contentType:false,
     success:function(respond, textStatus, jqXHR){
       console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
-      var response = respond.slice(2, respond.length-2);
-      response = response.split('},{');
+      var response = JSON.parse (respond);
       var item;
+      items.clear ();
       for(var i =0; i<response.length; i++){
-        //console.log("resp"+i+": "+response[i]);
-        item = "{"+response[i]+"}";
-        item = $.parseJSON(item);
+        item = response[i];
         //console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
-        
         items.add([{id:item.itemId, content:item.itemId, start: item.startTime, end: item.endTime}]);
       }
 
@@ -517,7 +538,7 @@ $("#addFiles").change(function(e){
     processData:false,
     contentType:false,
     success:function(respond, textStatus, jqXHR){
-      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+      //console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
 
       element = $.parseJSON(respond);
       

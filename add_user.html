@@ -41,7 +41,7 @@
 					<th>Surname</th>
 					<td><input type="text" name="surname" required /></td>
 				</tr>
-				<tr>
+				<tr class="remove_if_not_super_admin">
 					<th>Permissions</th>
 					<td>
 						<select name="is_admin">
@@ -50,7 +50,7 @@
 						</select>
 					</td>
 				</tr>
-				<tr class="group_id_row">
+				<tr class="remove_if_not_super_admin">
 					<th>Group</th>
 					<td>
 						<select name="group_id">
@@ -91,6 +91,7 @@
 				function (response) {
 					if (!response.errored ()) {
 						var user = response.data;
+						var temp = $(".remove_if_not_super_admin");
 						if (user.is_admin && user.is_super_admin) {
 							perform_action (
 									"get_groups_list",
@@ -113,16 +114,25 @@
 										}
 									}
 							);
+							temp.removeClass ("remove_if_not_super_admin");
 						} else {
 							var form = $("#add_user_form");
-							form.find ("tr.group_id_row").remove ();
-							form.append ($("<input>")
+							temp.remove ();
+							form
+								.append ($("<input>")
 									.attr ({
 										type: "hidden",
 										name: "group_id"
 									})
 									.val (user.group_id)
-							);
+								)
+								.append ($("<input>")
+									.attr ({
+										type: "hidden",
+										name: "is_admin"
+									})
+									.val (0)
+								);
 						}
 					}
 				}

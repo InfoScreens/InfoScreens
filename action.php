@@ -313,7 +313,7 @@ if (isset ($_POST["action"])) {
 			);
 			break;
 		default:
-			$response = new Response (Errors::UNKNOWN_ACTION);
+			$response = new Response (null, Errors::UNKNOWN_ACTION);
 	}
 
 	// send back result in json
@@ -335,10 +335,9 @@ if(isset($_GET['saveItem'])){
 
 if(isset($_GET['removeItem'])){
 	//$data = json_decode($_POST["data"], true);
-	$fileId = $_POST["fileId"];
+	$itemId = $_POST["itemId"];
 	include "db_connect.php";
-	$sql_query = "DELETE  FROM `schedule` WHERE fileId = ".$fileId;
-	//echo $sql_query;
+	$sql_query = "DELETE  FROM `schedule` WHERE itemId = ".$itemId;
 	$query = mysql_query($sql_query);
 	echo mysql_error();
 	mysql_close($db);
@@ -349,12 +348,23 @@ if(isset($_GET["openSchedule"])){
 	$data = json_decode($_POST["data"], true);
 	include "db_connect.php";
 	$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."'";
+	//$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."' UNION SELECT *  FROM `files` WHERE fileId = ";
 	$query = mysql_query($sql_query);
 	$response = array();
 	while($item = mysql_fetch_assoc($query)){
 		$response[] = $item;
 	}
+
+	//var_dump($response);
 	echo json_encode($response);
+	mysql_close($db);
+}
+
+if(isset($_GET["updateSchedule"])){
+	$data = $_POST;
+	$sql_query = "UPDATE `schedule` SET startTime = '".$data["start"]."', endTime = '".$data["end"]."' WHERE itemId = '".$data["itemId"]."'";
+	include "db_connect.php";
+	mysql_query($sql_query);
 	mysql_close($db);
 }
 

@@ -19,10 +19,9 @@
 				<a href="/add_user.html" class="btn btn-default">Create user</a>
 			</div>
 
-			<div class="well well-sm" id="group_info">
-				<div>
-					<strong id="group_name"></strong>
-				</div>
+			<div class="well well-sm" id="group_info" style="overflow: hidden;">
+				<strong id="group_name" class="remove_if_not_super_admin"></strong>
+				<a id="group_devices" class="btn btn-default pull-right">Group devices</a>
 			</div>
 
 			<div class="form-group">
@@ -34,13 +33,17 @@
 						<th>Email</th>
 						<th>Name</th>
 						<th>Surname</th>
-						<th>Permissions</th>
+						<th>Devices</th>
+						<th class="remove_if_not_super_admin">Permissions</th>
 					</tr>
 					<tr class="template user_info_row">
 						<td class="user_info_column_email"></td>
 						<td class="user_info_column_name"></td>
 						<td class="user_info_column_surname"></td>
 						<td>
+							<a class="user_devices">Devices</a>
+						</td>
+						<td class="remove_if_not_super_admin">
 							<form class="user_info_permissions_form">
 								<input type="hidden" name="user_id" />
 								<select name="is_admin">
@@ -77,7 +80,8 @@
 
 				check_user_authorized (true);
 
-				var group_id = null;
+				var group_id = null,
+					is_super_admin = null;
 
 				var get_parameters = {};
 				if (location.href.indexOf ("?") != -1) {
@@ -108,7 +112,11 @@
 									group_id = user.group_id;
 								}
 
-								if (user.is_admin && user.is_super_admin) {
+								$("#group_devices")[0].href = "devices_of_group.html?group_id=" + window.escape (group_id);
+
+								is_super_admin = user.is_admin && user.is_super_admin;
+								var temp = $(".remove_if_not_super_admin");
+								if (is_super_admin) {
 									perform_action (
 											"get_group",
 											{
@@ -126,44 +134,14 @@
 												}
 											}
 									);
+									temp.removeClass ("remove_if_not_super_admin");
 								} else {
-									$("#group_info").remove ();
+									temp.remove ();
 									update_user_list ();
 								}
 							}
 						}
 				);
-
-				function buy (submit_event) {
-
-					submit_event.preventDefault ();
-
-					var form = this;
-
-					perform_action (
-						"set_user_is_admin",
-						{
-							user_id: form.user_id.value,
-							is_admin: form.is_admin.value
-						},
-						function (response) {
-
-							if (response.errored ()) {
-
-								$("#error_text")
-									.text (get_error_text (response.error))
-									.show ();
-								form.is_admin.value = form.is_admin_old.value;
-
-							} else {
-
-								$("#error_text").hide ();
-								form.is_admin_old.value = form.is_admin.value;
-
-							}
-						}
-					);
-				}
 
 				function update_user_list () {
 
@@ -192,19 +170,52 @@
 												row = row_template
 														.clone ()
 														.removeClass ("template"),
-												permissions = user.is_admin ? 1 : 0,
-												permissions_form = row.find (".user_info_permissions_form")[0];
+												permissions = user.is_admin ? 1 : 0;
 
 										row.find (".user_info_column_email").text (user.email);
 										row.find (".user_info_column_name").text (user.name);
 										row.find (".user_info_column_surname").text (user.surname);
+										row.find (".user_devices")[0].href = "devices_of_user.html?user_id=" + window.escape (user.id);
 
-										$(permissions_form).submit (buy);
+										if (is_super_admin) {
+											var permissions_form = row.find (".user_info_permissions_form")[0];
 
-										permissions_form.user_id.value = user.id;
-										permissions_form.is_admin.value
-												= permissions_form.is_admin_old.value
-												= permissions;
+											$ (permissions_form).submit (function (e) {
+
+												e.preventDefault ();
+
+												var form = this;
+
+												perform_action (
+														"set_user_is_admin",
+														{
+															user_id: form.user_id.value,
+															is_admin: form.is_admin.value
+														},
+														function (response) {
+
+															if (response.errored ()) {
+
+																$ ("#error_text")
+																		.text (get_error_text (response.error))
+																		.show ();
+																form.is_admin.value = form.is_admin_old.value;
+
+															} else {
+
+																$ ("#error_text").hide ();
+																form.is_admin_old.value = form.is_admin.value;
+
+															}
+														}
+												);
+											});
+
+											permissions_form.user_id.value = user.id;
+											permissions_form.is_admin.value
+													= permissions_form.is_admin_old.value
+													= permissions;
+										}
 
 										container.append (row);
 									}

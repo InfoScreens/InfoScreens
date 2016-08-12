@@ -1,20 +1,3 @@
-<?php
-
-include_once ("auth.php");
-include_once ("users.php");
-include_once ("utils.php");
-
-$is_authorized = $auth->is_authorized ();
-
-if (!$is_authorized) {
-
-	$utils->redirect ("/login.php");
-
-} else {
-
-	$user_info = $users->get ($auth->get_authorized_id ()->data)->data;
-
-?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,8 +23,6 @@ if (!$is_authorized) {
 	<div class="col-lg-3 action-panel">
 		<h3>Action panel</h3>
 		<select class="form-control selectpicker" id="monSelect">
-			<option value="1"> Mon 1 </option>
-			<option value="2"> Mon 2 </option>
 		</select>
 		<br>
 		<div class='input-group date' id='datetimepicker'>
@@ -53,31 +34,33 @@ if (!$is_authorized) {
         <button type="button" class="btn btn-default" style="width:100%;" id="openScheduleBtn" onclick="openSchedule()">Загрузить программу</button>
 		<div class="well well-sm">
 			<div class="form-group">
-				<strong><?php echo $utils->escape_html ($user_info["name"]." ".$user_info["surname"]); ?></strong>
+				<strong id="user_name"></strong>
 			</div>
 			<div class="form-group">
-				<i><?php echo $utils->escape_html ($user_info["email"]); ?></i>
+				<i id="user_email"></i>
 			</div>
 			<div class="form-group">
 				<a href="/logout.php" class="btn btn-default">Log out</a>
 			</div>
 		</div>
-		<?php
-
-	if ($user_info["is_admin"]) {
-
-		?><div class="well well-sm">
+		<div class="well well-sm remove_if_not_admin">
 			<div class="form-group">
 				<strong>Admin</strong>
 			</div>
 			<div class="form-group">
-				<a href="/users_list.html" class="btn btn-default">Manage users</a>
+				<a id="group_devices" class="btn btn-default">Group devices</a>
+				<a id="group_users" class="btn btn-default">Group users</a>
 			</div>
-		</div><?php
-
-	}
-
-		?>
+		</div>
+		<div class="well well-sm remove_if_not_super_admin">
+			<div class="form-group">
+				<strong>Super admin</strong>
+			</div>
+			<div class="form-group">
+				<a id="groups" class="btn btn-default" href="groups.html">Groups</a>
+				<a id="devices" class="btn btn-default" href="all_devices.html">Devices</a>
+			</div>
+		</div>
 
 	  </div>
 
@@ -168,10 +151,69 @@ if (!$is_authorized) {
                 	defaultDate: date
                 });
                 $('.selectpicker').selectpicker();
+
+				perform_action (
+					"get_currrent_user_info",
+					null,
+					function (response) {
+						if (response.errored ()) {
+							window.location = "login.php";
+						} else {
+							var user = response.data,
+								user_id = user.id;
+
+							$("#user_name").text (user.name + " " + user.surname);
+							$("#user_email").text (user.email);
+
+							var temp = $(".remove_if_not_admin"),
+								temp2 = $(".remove_if_not_super_admin");
+							if (user.is_admin) {
+								temp.removeClass ("remove_if_not_admin");
+
+								$("#group_devices")[0].href = "devices_of_group.html?group_id=" + window.escape (user.group_id);
+								$("#group_users")[0].href = "users_list.html?group_id=" + window.escape (user.group_id);
+
+								if (user.is_super_admin) {
+									temp2.removeClass ("remove_if_not_super_admin");
+								} else {
+									temp2.remove ();
+								}
+							} else {
+								temp.remove ();
+								temp2.remove ();
+							}
+
+							perform_action (
+								"get_list_of_user_devices",
+								{
+									user_id: user_id
+								},
+								function (response) {
+									if (response.errored ()) {
+										alert (response.error + ", " + get_error_text (response.error));
+									} else {
+										var devices = response.data,
+											container = $("#monSelect");
+										for (var i in devices) {
+											var device = devices[i];
+											container.append (
+												$("<option>")
+													.text (device.user_specific.name)
+													.val (device.device_specific.id)
+											);
+										}
+										container.selectpicker ("refresh");
+									}
+								}
+							);
+						}
+					}
+				);
             });
         </script>
     
 	<script src="script/script.js"></script>
+	<script src="script/x.js"></script>
 	<script>
 	
 
@@ -179,5 +221,3 @@ if (!$is_authorized) {
 
 </body>
 </html>
-<?php
-}
