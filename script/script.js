@@ -90,6 +90,52 @@ var container = document.getElementById("timeline");
     start: getTime('start'),
     end: getTime('end'),
     minHeight: '200px',
+    onRemove: function(item, callback){
+      //console.log(item);
+      var data = new FormData();
+      data.append("itemId", item.id);
+      console.log(data);
+      $.ajax({
+        url:'../action.php?removeItem',
+        method:'POST',
+        data:data,
+        cache:false,
+        dataType:'text',
+        processData:false,
+        contentType:false,
+        success:function(respond, textStatus, jqXHR){
+          console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+          console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
+        }
+      })
+      items.remove(item);
+    },
+    onMove: function(item, callback){
+
+      var start = moment(item.start);
+      var end = moment(item.end);
+      var data = new FormData();
+      data.append("itemId", item.id);
+      data.append("start", start.format('YYYY-MM-DD HH:mm:ss'));
+      data.append("end", end.format('YYYY-MM-DD HH:mm:ss'));
+      $.ajax({
+        url:'../action.php?updateSchedule',
+        method:'POST',
+        data:data,
+        cache:false,
+        dataType:'text',
+        processData:false,
+        contentType:false,
+        success:function(respond, textStatus, jqXHR){
+          console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+          console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
+        }
+      })//*/
+    },
 
 
     /*
@@ -364,8 +410,8 @@ $("#datetimepicker").on("dp.change", function(e){
   var today= moment($("#date").val(), "YYYY-MM-DD");
   var tomorrow = moment($("#date").val(), "YYYY-MM-DD");  
   tomorrow.add(1, "days");
-  console.log("Today is: "+today.format("YYYY-MM-DD"));
-  console.log("Tomorrow is: "+tomorrow.format("YYYY-MM-DD"));
+  //console.log("Today is: "+today.format("YYYY-MM-DD"));
+  //console.log("Tomorrow is: "+tomorrow.format("YYYY-MM-DD"));
   timeline.setWindow(today.format("YYYY-MM-DD"), tomorrow.format("YYYY-MM-DD"));
   uploadSchedule();
 });
@@ -380,10 +426,9 @@ function saveItem(itemId){
   var item = items.get(itemId);
   item.mon = $("#monSelect").val();
   item.date = $("#date").val();
-  var item = JSON.stringify(item);  
+  item = JSON.stringify(item);  
   var data = new FormData();
   data.append("data", item);
-  
   $.ajax({
     url:'../action.php?saveItem',
     method:'POST',
@@ -393,10 +438,10 @@ function saveItem(itemId){
     processData:false,
     contentType:false,
     success:function(respond, textStatus, jqXHR){
-      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+      //console.log("saveItem success: "+respond+", "+textStatus+", "+jqXHR);
     },
     error:function(jqXHR, textStatus, errorThrown){
-      console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
+      console.log("saveItem fail: "+jqXHR+", "+textStatus+", "+errorThrown);
     }
 
   })//*/
@@ -423,10 +468,8 @@ function openSchedule(){
       var item;
       items.clear ();
       for(var i =0; i<response.length; i++){
-        //console.log("resp"+i+": "+response[i]);
         item = response[i];
-        console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
-        //items.add("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
+        //console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
         items.add([{id:item.itemId, content:item.itemId, start: item.startTime, end: item.endTime}]);
       }
 
@@ -442,8 +485,11 @@ function openSchedule(){
 
 
 function updateItem(){
+
 }
 //------end of schedule upload
+
+
 
 //------add files
 
@@ -492,7 +538,7 @@ $("#addFiles").change(function(e){
     processData:false,
     contentType:false,
     success:function(respond, textStatus, jqXHR){
-      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+      //console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
 
       element = $.parseJSON(respond);
       
@@ -525,7 +571,9 @@ $("#addFiles").change(function(e){
 
   /* Зaкрытие мoдaльнoгo oкнa, тут делaем тo же сaмoе нo в oбрaтнoм пoрядке */
 
-$('#addItemBtn').click( function(){ // лoвим клик пo крестику или пoдлoжке
+$('#addItemBtn').click( function(e){ // лoвим клик пo кнопке
+    e.preventDefault();
+    e.stopPropagation();
     var a1 = $("#startHour").val();
     var a2 = $("#startMinutes").val();
     var b1 = $("#endHour").val();
@@ -533,14 +581,14 @@ $('#addItemBtn').click( function(){ // лoвим клик пo крестику �
     if((a1>23 || b1>23) || (a1<0 || b1<0) || (a2>59 || b2>59)||(a2<0 || b2<0)){
       console.log("Invalid value");
       return 0;
-    }
+    } 
     var today = $("#date").val();
     var start = moment(today, "YYYY-MM-DD")
     var end = moment(today, "YYYY-MM-DD")
     start.set({'hour':a1, 'minute':a2});
     end.set({'hour':b1, 'minute':b2});
-    console.log("ST: "+start.format("YYYY-MM-DD HH:mm:00"));
-    console.log("ST: "+end.format("YYYY-MM-DD HH:mm:00"));
+    //console.log("ST: "+start.format("YYYY-MM-DD HH:mm:00"));
+    //console.log("ST: "+end.format("YYYY-MM-DD HH:mm:00"));
     $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
       items.add([
         {id:element["fileId"], content: element["fileName"], editable:true, start: start.format("YYYY-MM-DD HH:mm:00"), end:end.format("YYYY-MM-DD HH:mm:00")}
@@ -556,13 +604,27 @@ $('#addItemBtn').click( function(){ // лoвим клик пo крестику �
       );
   });
 
-$('#overlay').click( function(){ // лoвим клик пo крестику или пoдлoжке
-    
+$('#overlay').click( function(){ // лoвим клик пo пoдлoжке
+  $("#overlay").fadeOut(400, function(){
+    $("#time-setting").css('display', 'none');
+  })
+});
+
+  //-------
+  /*
     $('#time-setting')
       .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
         function(){ // пoсле aнимaции
-          $(this).css('display', 'none'); // делaем ему display: none;
-          $('#overlay').fadeOut(400); // скрывaем пoдлoжку
+          $("#overlay")
+            .css('display', 'none'); // делaем ему display: none;
+            .fadeOut(400); // скрывaем пoдлoжку
         }
       );
   });
+/*
+$('#overlay').fadeIn(400, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
+      function(){ // пoсле выпoлнения предъидущей aнимaции
+        $('#time-setting') 
+          .css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
+          .animate({opacity: 1, top: '20%'}, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
+      });//*/

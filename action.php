@@ -26,28 +26,44 @@ if(isset($_GET['uploadfiles'])){
 	if(!is_dir($fileDir)){
 		mkdir($fileDir, 0777);
 	}
+
+	$file = $_FILES["file"];
+	$hash = hash_file("sha256", $file["tmp_name"]);
+	$sql_query = "SELECT COUNT(*) FROM `files` WHERE `hash` = '".$hash."'";
+	include "db_connect.php";
+	$query = mysql_query($sql_query);
+	while($item = mysql_fetch_array($query)){
+		if($item[0] == 0){
+			$isExists = false;
+		}else{
+			$isExists = true;
+		}
+	}
 	
-	foreach($_FILES as $file){
+	if(!$isExists){ //если файла нет в базе - добавляем, если есть - получаем инфу о нём
 		$filename = basename($file['name']);
-		
 		if(move_uploaded_file($file['tmp_name'], $fileDir."/".$filename)){
-			$files[] = $filename;
+			$hash = hash_file("sha256", $fileDir."/".$filename);
 			getThumbnail($fileDir, $filename);
-			include "db_connect.php";
-			$sql_query = "INSERT INTO `files`(`fileName`, `uploadTime`, `type`) VALUES ('".$filename."', NOW(), '".$file['type']."')";
+			$sql_query = "INSERT INTO `files`(`fileName`, `uploadTime`, `type`, `hash`) VALUES ('".$filename."', NOW(), '".$file['type']."', '".$hash."')";
 			mysql_query($sql_query);
 			$sql_query = "SELECT * FROM `files` WHERE `fileName` = '".$filename."'";
 			$result = mysql_query($sql_query);
 			while($fileinfo = mysql_fetch_assoc($result)){
 				$data = $fileinfo;
 			}
-
-
-
-			mysql_close($db);
 		}else{
 			$error = true;
-		}	
+		}
+	}else{
+		
+		$sql_query = "SELECT * FROM `files` WHERE `hash` = '".$hash."'";
+		$response = mysql_query($sql_query);
+		while($fileinfo = mysql_fetch_assoc($response)){
+			//var_dump($fileinfo);
+			$data = $fileinfo;
+		}
+
 	}
 
 	
@@ -55,11 +71,12 @@ if(isset($_GET['uploadfiles'])){
 		$response = array('error' => 'File uploading error');
 	}else{
 		$response = $data;
-	}//*/
-	
-	echo json_encode($response);//*/
+	}
 
-}//*/
+	mysql_close($db);
+	echo json_encode($response);
+
+}
 
 include_once ("users.php");
 include_once ("auth.php");
@@ -304,39 +321,50 @@ if (isset ($_POST["action"])) {
 }
 
 if(isset($_GET['saveItem'])){
-
-	/*
-	Success: array(1) {
-  ["data"]=>
-  string(128) "{"id":"257","content":"video_2016-05-20_11-44-30.mov","editable":true,"start":"2016-07-14T10:00:00","end":"2016-07-14T11:00:00"}"
-  }
-	*/
-
   	$data = json_decode($_POST["data"], true);
-  	//var_dump($data);
 	include "db_connect.php";
-	//echo $data["start"];
 	$sql_query = "INSERT INTO `schedule`(`device`, `date`, `fileId`, `startTime`, `endTime`) VALUES ('".$data['mon']."', '".$data['date']."', '".$data['id']."',  '".$data['start']."', '".$data['end']."')";
 	$query = mysql_query($sql_query);
 	echo mysql_error();
 
-	echo "sql_query: ".$sql_query;
+	//echo "sql_query: ".$sql_query;
 	
 
 }//*/
+
+if(isset($_GET['removeItem'])){
+	//$data = json_decode($_POST["data"], true);
+	$itemId = $_POST["itemId"];
+	include "db_connect.php";
+	$sql_query = "DELETE  FROM `schedule` WHERE itemId = ".$itemId;
+	$query = mysql_query($sql_query);
+	echo mysql_error();
+	mysql_close($db);
+}
 
 
 if(isset($_GET["openSchedule"])){
 	$data = json_decode($_POST["data"], true);
 	include "db_connect.php";
 	$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."'";
+	//$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."' UNION SELECT *  FROM `files` WHERE fileId = ";
 	$query = mysql_query($sql_query);
 	$response = array();
 	while($item = mysql_fetch_assoc($query)){
 		$response[] = $item;
 	}
-	echo json_encode($response);
 
+	//var_dump($response);
+	echo json_encode($response);
+	mysql_close($db);
+}
+
+if(isset($_GET["updateSchedule"])){
+	$data = $_POST;
+	$sql_query = "UPDATE `schedule` SET startTime = '".$data["start"]."', endTime = '".$data["end"]."' WHERE itemId = '".$data["itemId"]."'";
+	include "db_connect.php";
+	mysql_query($sql_query);
+	mysql_close($db);
 }
 
 
