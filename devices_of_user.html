@@ -244,32 +244,39 @@
 
                                 var form = row.find (".device_name_form")[0];
                                 if (is_user_device) {
-                                    form.name.value
-                                            = form.name_old.value
-                                            = device_user_info.user_specific.name;
-                                    form.device_id.value = device.id;
-                                    $(form.name).change (function () {
-                                        var form = this.parentElement;
-                                        perform_action (
-                                                "set_device_name_for_user",
-                                                {
-                                                    name: form.name.value,
-                                                    user_id: user_id,
-                                                    device_id: form.device_id.value
-                                                },
-                                                function (response) {
-                                                    if (response.errored ()) {
-                                                        $("#error_text")
-                                                                .text (get_error_text (response.error))
-                                                                .show ();
-                                                        form.name.value = form.name_old.value;
-                                                    } else {
-                                                        $("#error_text").hide ();
-                                                        form.name_old.value = form.name.value;
+                                    if (is_admin) {
+                                        form.name.value
+                                                = form.name_old.value
+                                                = device_user_info.user_specific.name;
+                                        form.device_id.value = device.id;
+                                        $ (form.name).change (function () {
+                                            var form = this.parentElement;
+                                            perform_action (
+                                                    "set_device_name_for_user",
+                                                    {
+                                                        name: form.name.value,
+                                                        user_id: user_id,
+                                                        device_id: form.device_id.value
+                                                    },
+                                                    function (response) {
+                                                        if (response.errored ()) {
+                                                            $ ("#error_text")
+                                                                    .text (get_error_text (response.error))
+                                                                    .show ();
+                                                            form.name.value = form.name_old.value;
+                                                        } else {
+                                                            $ ("#error_text").hide ();
+                                                            form.name_old.value = form.name.value;
+                                                        }
                                                     }
-                                                }
-                                        );
-                                    });
+                                            );
+                                        });
+                                    } else {
+                                        var t1 = $(form),
+                                                t2 = t1.parent ();
+                                        t1.remove ();
+                                        t2.text (device_user_info.user_specific.name);
+                                    }
                                 } else {
                                     form.name.disabled = true;
                                 }

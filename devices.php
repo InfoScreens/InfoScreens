@@ -364,16 +364,9 @@ class Devices {
 
 		global $utils, $auth;
 
-		$result = $utils->check_is_user ();
+		$result = $utils->check_is_admin ();
 		if ($result->errored ()) {
 			return $result;
-		}
-
-		if ($auth->get_authorized_id ()->data != $user_id) {
-			$result = $utils->check_is_admin ();
-			if ($result->errored ()) {
-				return $result;
-			}
 		}
 
 		$escaped_user_id = $utils->escape_sql ($user_id);
