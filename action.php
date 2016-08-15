@@ -345,10 +345,12 @@ if(isset($_GET['removeItem'])){
 
 
 if(isset($_GET["openSchedule"])){
-	$data = json_decode($_POST["data"], true);
+	//$data = json_decode($_POST["data"], true);
+	$data = $_POST;
+	
 	include "db_connect.php";
-	$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."'";
-	//$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."' UNION SELECT *  FROM `files` WHERE fileId = ";
+	//$sql_query = "SELECT * FROM `schedule` WHERE device = '".$_POST["mon"]."' AND date = '".$_POST["date"]."'";
+	$sql_query = "SELECT * FROM  `files` ,  `schedule` WHERE device = '".$data['mon']."' AND date = '".$data['date']."' AND files.fileId = schedule.fileId";
 	$query = mysql_query($sql_query);
 	$response = array();
 	while($item = mysql_fetch_assoc($query)){
