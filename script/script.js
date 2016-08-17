@@ -134,10 +134,12 @@ var container = document.getElementById("timeline");
         error:function(jqXHR, textStatus, errorThrown){
           console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
         }
-      })//*/
+      });
+      findIntersect(item);
+
     },
 
-
+    
     /*
     // always snap to full hours, independent of the scale
     snap: function (date, scale, step) {
@@ -463,13 +465,13 @@ function openSchedule(){
     processData:false,
     contentType:false,
     success:function(respond, textStatus, jqXHR){
-      console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
+      //console.log("Success: "+respond+", "+textStatus+", "+jqXHR);
       var response = JSON.parse (respond);
       var item;
       items.clear ();
       for(var i =0; i<response.length; i++){
         item = response[i];
-        //console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
+        console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+", filename:"+item.fileName+"}");
         items.add([{id:item.itemId, content:item.itemId, start: moment (1000*item.startTime).format("YYYY-MM-DD HH:mm:00"), end: moment(1000*item.endTime).format("YYYY-MM-DD HH:mm:00")}]);
       }
 
@@ -512,7 +514,7 @@ function addClass(type){
   }
 }
 
-$("#addVideoBtn").click(function(){
+$("#addFileBtn").click(function(){
   $("#addFile").trigger("click");
 })
 
@@ -542,7 +544,7 @@ $("#addFiles").change(function(e){
 
       element = $.parseJSON(respond);
       
-      $('#overlay').fadeIn(400, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
+      $('.overlay').fadeIn(400, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
       function(){ // пoсле выпoлнения предъидущей aнимaции
         $('#time-setting') 
           .css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
@@ -599,15 +601,19 @@ $('#addItemBtn').click( function(e){ // лoвим клик пo кнопке
       .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
         function(){ // пoсле aнимaции
           $(this).css('display', 'none'); // делaем ему display: none;
-          $('#overlay').fadeOut(400); // скрывaем пoдлoжку
+          $('.overlay').fadeOut(400); // скрывaем пoдлoжку
         }
       );
   });
 
-$('#overlay').click( function(){ // лoвим клик пo пoдлoжке
-  $("#overlay").fadeOut(400, function(){
-    $("#time-setting").css('display', 'none');
-  })
+$('.overlay').click( function(){ // лoвим клик пo пoдлoжке
+  $('#time-setting, .textEditor, #tickerEditor')
+      .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
+        function(){ // пoсле aнимaции
+          $(this).css('display', 'none'); // делaем ему display: none;
+          $('.overlay').fadeOut(400); // скрывaем пoдлoжку
+        }
+      );
 });
 
   //-------
@@ -628,3 +634,116 @@ $('#overlay').fadeIn(400, // снaчaлa плaвнo пoкaзывaем темну
           .css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
           .animate({opacity: 1, top: '20%'}, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
       });//*/
+
+
+//------- add text notes and ticker
+
+$("#addAdvertBtn").click(function(){
+  $(".overlay").fadeIn(400);
+  $("#advertEditor")
+                    
+                    .css("display", "block")
+                    .animate({opacity: 1});
+
+})
+
+$("#addTickerBtn").click(function(){
+  $(".overlay").fadeIn(400);
+  $("#tickerEditor")
+                    
+                    .css("display", "block")
+                    .animate({opacity: 1});
+
+})
+
+
+
+$("#saveAdvert").click(function(){
+  //var advert = $("#textEditor").val();
+  var advert = CKEDITOR.instances.textEditor.getData();
+  console.log(advert);
+  $('#time-setting, .textEditor, #tickerEditor')
+      .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
+        function(){ // пoсле aнимaции
+          $(this).css('display', 'none'); // делaем ему display: none;
+          $('.overlay').fadeOut(400); // скрывaем пoдлoжку
+        }
+      );
+  var now = moment();
+  var end = moment();
+  end.add(2, 'hour');
+  items.add({ content:advert, start: now.format('YYYY-MM-DD HH:mm:ss'), end: end.format('YYYY-MM-DD HH:mm:ss')});
+})
+
+
+
+$("#saveTicker").click(function(){
+  //var advert = $("#textEditor").val();
+  var advert = CKEDITOR.instances.tickerEditor.getData();
+  console.log(advert);
+  $('#time-setting, .textEditor, #tickerEditor')
+      .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
+        function(){ // пoсле aнимaции
+          $(this).css('display', 'none'); // делaем ему display: none;
+          $('.overlay').fadeOut(400); // скрывaем пoдлoжку
+        }
+      );
+  var now = moment();
+  var end = moment();
+  end.add(2, 'hour');
+  items.add({ content:advert, start: now.format('YYYY-MM-DD HH:mm:ss'), end: end.format('YYYY-MM-DD HH:mm:ss')});
+})
+
+var a1 = moment();
+var a2 = moment();
+var b1 = moment();
+var b2 = moment();
+a1.set('hour', 1);
+a2.set('hour', 12);
+b1.set('hour', 5);
+b2.set('hour', 20);
+
+items.add({ content:"Date Range A", start: a1.format('YYYY-MM-DD HH:mm:ss'), end: a2.format('YYYY-MM-DD HH:mm:ss')});
+items.add({ content:"Date Range B", start: b1.format('YYYY-MM-DD HH:mm:ss'), end: b2.format('YYYY-MM-DD HH:mm:ss')});
+
+
+function findIntersect(){
+  //var a1, a2, b1, b2 = moment();
+  /*
+  var arr = items.get();
+  for(var i = 0; i<arr.length; i++){
+    if(i == arr.id) continue;
+    var l, r;
+    var a1 = moment();
+    var a2 = moment();
+    var b1 = moment();
+    var b2 = moment();
+    a1 = 
+  }
+  */
+
+  
+  console.log(a1.format('YYYY-MM-DD HH:mm:ss'));
+  console.log(a2.format('YYYY-MM-DD HH:mm:ss'));
+  console.log(b1.format('YYYY-MM-DD HH:mm:ss'));
+  console.log(b2.format('YYYY-MM-DD HH:mm:ss'));
+
+  //var l = (a1<b1) && (b1<a2);
+  var l, r;
+
+  if((a1<b1) && (b1<a2)){
+    l = b1;
+  }else if((a1>b1) && (a1<b2)){
+    l = a1;
+  }
+
+  if((b2>a1) && (b2<a2)){
+    r = b2;
+  }else if((a2>b1) && (a2<b2)){
+    r = a2;
+  }
+  //items.add({id:"A", content:"LOL", start:l, end:r, type:"background"});
+  //*/
+}
+
+findIntersect();

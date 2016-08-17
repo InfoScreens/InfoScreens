@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
     <link href="css/bootstrap-datetimepicker.css" rel="stylesheet">
 	<link href="css/bootstrap-select.min.css" rel="stylesheet">
-
+	<script src="script/ckeditor/ckeditor.js"></script>
 	<style>
 	.fa{
 		font-size:2.0em;
@@ -85,10 +85,16 @@
 	<div id="context-menu" class="context-menu">
 	    <ul class="context-menu__items">
 	      <li class="context-menu__item">
-	        <a href="#" id="addVideoBtn" class="context-menu__link" data-action="View"><i class="fa fa-file-powerpoint-o" aria-hidden="true"></i> Add presentation</a>
+	        <a href="#" id="addFileBtn" class="context-menu__link" data-action="View"><i class="fa fa-file-o" aria-hidden="true"></i> Add file</a>
 	      </li>
 	      <li class="context-menu__item">
-	        <a href="#" class="context-menu__link" data-action="Edit"><i class="fa fa-file-video-o"></i> Add video</a>
+	        <a href="#" id="addAdvertBtn" class="context-menu__link" data-action="Edit"><i class="fa fa-file-text-o"></i> Add text</a>
+	      </li>
+	      <li class="context-menu__item">
+	        <a href="#" id="addTickerBtn" class="context-menu__link" data-action="Edit"><i class="fa fa-comment-o"></i> Add ticker</a>
+	      </li>
+	      <li class="context-menu__item">
+	        <a href="#" id="addTickerBtn" class="context-menu__link" data-action="Edit"><i class="fa fa-comment-o"></i> Add background	</a>
 	      </li>
 	      <li class="context-menu__item">
 	        <a href="#" class="context-menu__link" data-action="Delete"><i class="fa fa-times"></i> Delete Task</a>
@@ -125,14 +131,34 @@
 					<input class="form-control" type="text" maxlength="2" size="2" id="endMinutes" value="00">
 				</div>		
 			</div>
-			<div class="row">
+			<div class="row">,
 			<button type="submit" class="btn btn-primary btn-sm btn-block" id="addItemBtn">Добавить/Add</button>
 
 			<!--<button type="button" class="btn .btn-info .btn-block" id="addItem">Добавить/Add</button>-->
 			</div>
 		</form>
 	</div>
-	<div id="overlay"></div>
+
+	
+
+	<div class="textEditor" id="advertEditor">
+		<textarea id="textEditor" ></textarea>
+			<script >
+				CKEDITOR.replace("textEditor",{
+					height:400
+				});
+				</script>
+		<button class="btn btn-primary pull-right" id="saveAdvert">Add advert</button>
+	</div>
+
+	<div id="tickerEditor">
+		<textarea   id="tickerEditor" rows="3" ></textarea>
+		<button class="btn btn-primary pull-right" id="saveTicker">Add ticker</button>
+	</div>
+
+	<div class="overlay"></div>
+
+
 
 
 	<script src="script/jquery-2.2.4.min.js"></script>
