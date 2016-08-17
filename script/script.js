@@ -118,8 +118,8 @@ var container = document.getElementById("timeline");
       var end = moment(item.end);
       var data = new FormData();
       data.append("itemId", item.id);
-      data.append("start", start.format('YYYY-MM-DD HH:mm:ss'));
-      data.append("end", end.format('YYYY-MM-DD HH:mm:ss'));
+      data.append("start", start.unix());
+      data.append("end", end.unix());
       $.ajax({
         url:'../action.php?updateSchedule',
         method:'POST',
@@ -470,7 +470,7 @@ function openSchedule(){
       for(var i =0; i<response.length; i++){
         item = response[i];
         //console.log("{id:"+item.itemId+", content:'"+item.itemId+"', start:"+item.startTime+", end:"+item.endTime+"}");
-        items.add([{id:item.itemId, content:item.itemId, start: item.startTime, end: item.endTime}]);
+        items.add([{id:item.itemId, content:item.itemId, start: moment (1000*item.startTime).format("YYYY-MM-DD HH:mm:00"), end: moment(1000*item.endTime).format("YYYY-MM-DD HH:mm:00")}]);
       }
 
     },
@@ -591,7 +591,7 @@ $('#addItemBtn').click( function(e){ // лoвим клик пo кнопке
     //console.log("ST: "+end.format("YYYY-MM-DD HH:mm:00"));
     $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
       items.add([
-        {id:element["fileId"], content: element["fileName"], editable:true, start: start.format("YYYY-MM-DD HH:mm:00"), end:end.format("YYYY-MM-DD HH:mm:00")}
+        {id:element["fileId"], content: element["fileName"], editable:true, start: start.unix (), end: end.unix ()}
         ]);
 
       saveItem(element["fileId"]);
