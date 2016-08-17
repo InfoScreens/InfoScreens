@@ -23,24 +23,40 @@ function get_schedule ($device_id) {
 		return new Response (null, Errors::DB_QUERY_FAILED);
 	}
 
+	$first_time = 0xFFFFFFFF;
+	$last_time = 0;
+
 	$items = array ();
 	while ($row = mysql_fetch_array ($result)) {
+		$first_time = min ($first_time, intval ($row["startTime"]));
+		$last_time = max ($last_time, intval ($row["endTime"]));
+		switch ($row["type"]) {
+			case "image/jpeg":
+				$type = 4;
+				break;
+			default:
+				$type = 1;
+		}
 		$items[] = array (
 			"item_id" => $row["itemId"],
-			"type" => $row["type"],
-			"start_time" => strtotime ($row["startTime"]),
-			"end_time" => strtotime ($row["endTime"]),
+			"type" => $type,
+			"start_time" => intval ($row["startTime"]),
+			"end_time" => intval ($row["endTime"]),
 			"params" => array (),
-			"content_links" => array (
+			"content" => array (
 				$row["fileName"]
 			),
 			"position" => array (
-				0, 0,
-				100, 100
+				"x1" => 0, "y1" => 0,
+				"x2" => 100, "y2" => 100
 			)
 		);
 	}
-	return new Response ($items);
+	return new Response (array (
+		"start_time" => $first_time,
+		"end_time" => $last_time,
+		"data" => $items
+	));
 }
 
 function get_param ($name, $default = "", $from = null) {
