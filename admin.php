@@ -41,6 +41,7 @@
 			</div>
 			<div class="form-group">
 				<a href="/logout.php" class="btn btn-default">Log out</a>
+				<a id="user_devices" class="btn btn-default">My devices</a>
 			</div>
 		</div>
 		<div class="well well-sm remove_if_not_admin">
@@ -176,7 +177,7 @@
                 $('.selectpicker').selectpicker();
 
 				perform_action (
-					"get_currrent_user_info",
+					"get_current_user_info",
 					null,
 					function (response) {
 						if (response.errored ()) {
@@ -187,6 +188,7 @@
 
 							$("#user_name").text (user.name + " " + user.surname);
 							$("#user_email").text (user.email);
+							$("#user_devices")[0].href = "devices_of_user.html?user_id=" + window.escape (user.id);
 
 							var temp = $(".remove_if_not_admin"),
 								temp2 = $(".remove_if_not_super_admin");

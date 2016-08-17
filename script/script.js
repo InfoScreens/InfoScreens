@@ -134,10 +134,12 @@ var container = document.getElementById("timeline");
         error:function(jqXHR, textStatus, errorThrown){
           console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
         }
-      })//*/
+      });
+      findIntersect();
+
     },
 
-
+    
     /*
     // always snap to full hours, independent of the scale
     snap: function (date, scale, step) {
@@ -691,3 +693,44 @@ $("#saveTicker").click(function(){
   end.add(2, 'hour');
   items.add({ content:advert, start: now.format('YYYY-MM-DD HH:mm:ss'), end: end.format('YYYY-MM-DD HH:mm:ss')});
 })
+
+var a1 = moment();
+var a2 = moment();
+var b1 = moment();
+var b2 = moment();
+a1.set('hour', 1);
+a2.set('hour', 12);
+b1.set('hour', 5);
+b2.set('hour', 20);
+
+items.add({ content:"Date Range A", start: a1.format('YYYY-MM-DD HH:mm:ss'), end: a2.format('YYYY-MM-DD HH:mm:ss')});
+items.add({ content:"Date Range B", start: b1.format('YYYY-MM-DD HH:mm:ss'), end: b2.format('YYYY-MM-DD HH:mm:ss')});
+
+
+function findIntersect(){
+  //var a1, a2, b1, b2 = moment();
+  console.log(items.get())
+
+  /*
+  console.log(a1.format('YYYY-MM-DD HH:mm:ss'));
+  console.log(a2.format('YYYY-MM-DD HH:mm:ss'));
+  console.log(b1.format('YYYY-MM-DD HH:mm:ss'));
+  console.log(b2.format('YYYY-MM-DD HH:mm:ss'));
+
+  //var l = (a1<b1) && (b1<a2);
+  var l, r;
+
+  if((a1<b1) && (b1<a2)){
+    l = b1;
+  }else if((a1>b1) && (a1<b2)){
+    l = a1;
+  }
+
+  if((b2>a1) && (b2<a2)){
+    r = b2;
+  }else if((a2>b1) && (a2<b2)){
+    r = a2;
+  }
+  items.add({id:"A", content:"LOL", start:l, end:r, type:"background"});
+  */
+}

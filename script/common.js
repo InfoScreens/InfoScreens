@@ -1,7 +1,7 @@
 
 function check_user_authorized (require_admin) {
     perform_action (
-        "get_currrent_user_info",
+        "get_current_user_info",
         null,
         function (response) {
             if (response.errored ()) {
