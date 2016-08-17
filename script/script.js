@@ -135,7 +135,7 @@ var container = document.getElementById("timeline");
           console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
         }
       });
-      findIntersect();
+      findIntersect(item);
 
     },
 
@@ -660,7 +660,7 @@ $("#addTickerBtn").click(function(){
 
 $("#saveAdvert").click(function(){
   //var advert = $("#textEditor").val();
-  var advert = "kjnkvjngfnfkj";
+  var advert = CKEDITOR.instances.textEditor.getData();
   console.log(advert);
   $('#time-setting, .textEditor, #tickerEditor')
       .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
@@ -679,7 +679,7 @@ $("#saveAdvert").click(function(){
 
 $("#saveTicker").click(function(){
   //var advert = $("#textEditor").val();
-  var advert = "lkfdkvjnfkj";
+  var advert = CKEDITOR.instances.tickerEditor.getData();
   console.log(advert);
   $('#time-setting, .textEditor, #tickerEditor')
       .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
@@ -709,9 +709,20 @@ items.add({ content:"Date Range B", start: b1.format('YYYY-MM-DD HH:mm:ss'), end
 
 function findIntersect(){
   //var a1, a2, b1, b2 = moment();
-  console.log(items.get())
-
   /*
+  var arr = items.get();
+  for(var i = 0; i<arr.length; i++){
+    if(i == arr.id) continue;
+    var l, r;
+    var a1 = moment();
+    var a2 = moment();
+    var b1 = moment();
+    var b2 = moment();
+    a1 = 
+  }
+  */
+
+  
   console.log(a1.format('YYYY-MM-DD HH:mm:ss'));
   console.log(a2.format('YYYY-MM-DD HH:mm:ss'));
   console.log(b1.format('YYYY-MM-DD HH:mm:ss'));
@@ -731,6 +742,8 @@ function findIntersect(){
   }else if((a2>b1) && (a2<b2)){
     r = a2;
   }
-  items.add({id:"A", content:"LOL", start:l, end:r, type:"background"});
-  */
+  //items.add({id:"A", content:"LOL", start:l, end:r, type:"background"});
+  //*/
 }
+
+findIntersect();

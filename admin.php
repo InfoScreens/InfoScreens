@@ -94,6 +94,9 @@
 	        <a href="#" id="addTickerBtn" class="context-menu__link" data-action="Edit"><i class="fa fa-comment-o"></i> Add ticker</a>
 	      </li>
 	      <li class="context-menu__item">
+	        <a href="#" id="addTickerBtn" class="context-menu__link" data-action="Edit"><i class="fa fa-comment-o"></i> Add background	</a>
+	      </li>
+	      <li class="context-menu__item">
 	        <a href="#" class="context-menu__link" data-action="Delete"><i class="fa fa-times"></i> Delete Task</a>
 	      </li>
 	    </ul>
@@ -149,7 +152,7 @@
 	</div>
 
 	<div id="tickerEditor">
-		<textarea   rows="3" ></textarea>
+		<textarea   id="tickerEditor" rows="3" ></textarea>
 		<button class="btn btn-primary pull-right" id="saveTicker">Add ticker</button>
 	</div>
 
