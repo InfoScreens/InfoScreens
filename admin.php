@@ -152,7 +152,7 @@
 	</div>
 
 	<div id="tickerEditor">
-		<textarea   id="tickerEditor" rows="3" ></textarea>
+		<textarea   id="tickerEditorArea" rows="3" ></textarea>
 		<button class="btn btn-primary pull-right" id="saveTicker">Add ticker</button>
 	</div>
 

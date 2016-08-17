@@ -679,7 +679,8 @@ $("#saveAdvert").click(function(){
 
 $("#saveTicker").click(function(){
   //var advert = $("#textEditor").val();
-  var advert = CKEDITOR.instances.tickerEditor.getData();
+  var advert = $("#tickerEditorArea").val();
+
   console.log(advert);
   $('#time-setting, .textEditor, #tickerEditor')
       .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
