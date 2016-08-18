@@ -1,74 +1,3 @@
-//------get time
-
-function getTime(p){
-  
-  var d = new Date();
-  var year = d.getFullYear();
-  var month = d.getMonth()+1 < 10 ? '0'+(d.getMonth()+1) : d.getMonth()+1;
-  var date = d.getDate() < 10 ? '0'+d.getDate() : d.getDate();
-  var hour = d.getHours() < 10 ? '0'+d.getHours() : d.getHours();
-  var min = d.getMinutes() < 10 ? '0'+d.getMinutes() : d.getMinutes();
-  var sec = d.getSeconds() < 10 ? '0'+d.getSeconds() : d.getSeconds();
-
-  var workDate = $("#date").val();
-  var workYear = workDate.substring(0, 4);
-  var workMonth = workDate.substring(5,7)-1;
-  var workDay = workDate.substring(8);
-  
-
-
-  if(p == 'now'){
-    return year+'-'+month+'-'+date+'T'+hour+':'+min+':'+sec; 
-  }
-  if(p == 'start' || p == 'min'){
-    return year+'-'+month+'-'+date;
-  }
-  if(p == 'workDate'){ 
-    workDate = new Date(workYear, workMonth, workDay, hour); //допустим здесь не совсем очевидно, но придумывать названия для новых
-                                                             //переменных мне лень, поэтому в workDate сначала кладу значение поля date, 
-                                                             //затем кладу в эту переменную дату, для которой мы сейчас редактируем трансляцию
-    var workYear = workDate.getFullYear();
-    var workMonth = workDate.getMonth()+1 < 10 ? '0'+(workDate.getMonth()+1) : workDate.getMonth()+1;
-    var workDay = workDate.getDate() < 10 ? '0'+workDate.getDate() : workDate.getDate();
-    var workHour = workDate.getHours() < 10 ? '0'+workDate.getHours() : workDate.getHours();
-    var workMin = workDate.getMinutes() < 10 ? '0'+workDate.getMinutes() : workDate.getMinutes();
-    var workSec = workDate.getSeconds() < 10 ? '0'+workDate.getSeconds() : workDate.getSeconds();
-    //console.log("workDate: "+workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00");
-    return workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00";
-  }
-   if(p == "+2"){ // +2 часа от workDate. Почему +2? Да потому что.
-
-    // ЧЁТ ХРЕНЬ ТУТ КАКАЯ-ТО ПРОИСХОДИТ: ПЕРЕПИСАТЬ.
-    workDate = new Date(workYear, workMonth, workDay, hour+1); //допустим здесь не совсем очевидно, но придумывать названия для новых
-                                                             //переменных мне лень, поэтому в workDate сначала кладу значение поля date, 
-                                                             //затем кладу в эту переменную дату, для которой мы сейчас редактируем трансляцию
-    
-    var workYear = workDate.getFullYear();
-    var workMonth = workDate.getMonth()+1 < 10 ? '0'+(workDate.getMonth()+1) : workDate.getMonth()+1;
-    var workDay = workDate.getDate() < 10 ? '0'+workDate.getDate() : workDate.getDate();
-    var workHour = workDate.getHours() < 10 ? '0'+workDate.getHours() : workDate.getHours();
-    var workMin = workDate.getMinutes() < 10 ? '0'+workDate.getMinutes() : workDate.getMinutes();
-    var workSec = workDate.getSeconds() < 10 ? '0'+workDate.getSeconds() : workDate.getSeconds();
-    //workDate.setHours(workDate.getHours()+2);
-    //console.log("+2 : "+workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00");
-    return workYear+"-"+workMonth+"-"+workDay+"T"+workHour+":00:00";
-  }
-
-
-  if(p == 'end'){
-    var a = new Date();
-    a.setDate(a.getDate()+1);
-    year = a.getFullYear();
-    month = a.getMonth()+1 < 10 ? '0'+(a.getMonth()+1) : a.getMonth()+1;
-    date = a.getDate() < 10 ? '0'+a.getDate() : a.getDate();
-    return year+'-'+month+'-'+date;
-  }//*/
-
-
-  return 0;
-}
-
-
 
 
 //------timeline script
@@ -82,16 +11,18 @@ var container = document.getElementById("timeline");
   ]);
 
 
+  // time variables for options
+  var today = moment();
+  var tomorrow = moment().add(1,'d');
+
 
   // Configuration for the Timeline
   var options = {
     editable: true,
-    min: getTime('min'),
-    start: getTime('start'),
-    end: getTime('end'),
+    start: today.format('YYYY-MM-DD'),
+    end: tomorrow.format('YYYY-MM-DD'),
     minHeight: '200px',
     onRemove: function(item, callback){
-      //console.log(item);
       var data = new FormData();
       data.append("itemId", item.id);
       console.log(data);
@@ -135,7 +66,7 @@ var container = document.getElementById("timeline");
           console.log("Fail: "+jqXHR+", "+textStatus+", "+errorThrown);
         }
       });
-      findIntersect(item);
+      //findIntersect(item);
 
     },
 
@@ -412,8 +343,6 @@ $("#datetimepicker").on("dp.change", function(e){
   var today= moment($("#date").val(), "YYYY-MM-DD");
   var tomorrow = moment($("#date").val(), "YYYY-MM-DD");  
   tomorrow.add(1, "days");
-  //console.log("Today is: "+today.format("YYYY-MM-DD"));
-  //console.log("Tomorrow is: "+tomorrow.format("YYYY-MM-DD"));
   timeline.setWindow(today.format("YYYY-MM-DD"), tomorrow.format("YYYY-MM-DD"));
   uploadSchedule();
 });
@@ -589,11 +518,10 @@ $('#addItemBtn').click( function(e){ // лoвим клик пo кнопке
     var end = moment(today, "YYYY-MM-DD")
     start.set({'hour':a1, 'minute':a2});
     end.set({'hour':b1, 'minute':b2});
-    //console.log("ST: "+start.format("YYYY-MM-DD HH:mm:00"));
-    //console.log("ST: "+end.format("YYYY-MM-DD HH:mm:00"));
     $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
       items.add([
-        {id:element["fileId"], content: element["fileName"], editable:true, start: start.unix (), end: end.unix ()}
+        //{id:element["fileId"], content: element["fileName"], editable:true, start: start.unix (), end: end.unix ()}
+         {id:element["fileId"], content: element["fileName"], editable:true, start: start.format("YYYY-MM-DD HH:mm:00"), end:end.format("YYYY-MM-DD HH:mm:00")}
         ]);
 
       saveItem(element["fileId"]);
@@ -616,24 +544,7 @@ $('.overlay').click( function(){ // лoвим клик пo пoдлoжке
       );
 });
 
-  //-------
-  /*
-    $('#time-setting')
-      .animate({opacity: 0, top: '15%'}, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
-        function(){ // пoсле aнимaции
-          $("#overlay")
-            .css('display', 'none'); // делaем ему display: none;
-            .fadeOut(400); // скрывaем пoдлoжку
-        }
-      );
-  });
-/*
-$('#overlay').fadeIn(400, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
-      function(){ // пoсле выпoлнения предъидущей aнимaции
-        $('#time-setting') 
-          .css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
-          .animate({opacity: 1, top: '20%'}, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
-      });//*/
+
 
 
 //------- add text notes and ticker
@@ -704,24 +615,27 @@ a2.set('hour', 12);
 b1.set('hour', 5);
 b2.set('hour', 20);
 
-items.add({ content:"Date Range A", start: a1.format('YYYY-MM-DD HH:mm:ss'), end: a2.format('YYYY-MM-DD HH:mm:ss')});
-items.add({ content:"Date Range B", start: b1.format('YYYY-MM-DD HH:mm:ss'), end: b2.format('YYYY-MM-DD HH:mm:ss')});
+//items.add({ content:"Date Range A", start: a1.format('YYYY-MM-DD HH:mm:ss'), end: a2.format('YYYY-MM-DD HH:mm:ss')});
+//items.add({ content:"Date Range B", start: b1.format('YYYY-MM-DD HH:mm:ss'), end: b2.format('YYYY-MM-DD HH:mm:ss')});
 
 
-function findIntersect(){
-  //var a1, a2, b1, b2 = moment();
-  /*
+function findIntersect(item){
+  var a1, a2, b1, b2 = moment();
+  
   var arr = items.get();
+  var l, r;
+  var a1 = moment(item.start);
+  var a2 = moment(item.end);
+  console.log("Start: "+a1+" end: "+a2);
+  var b1 = moment();
+  var b2 = moment();
+
   for(var i = 0; i<arr.length; i++){
     if(i == arr.id) continue;
-    var l, r;
-    var a1 = moment();
-    var a2 = moment();
-    var b1 = moment();
-    var b2 = moment();
-    a1 = 
+    
+    
   }
-  */
+  
 
   
   console.log(a1.format('YYYY-MM-DD HH:mm:ss'));
@@ -747,4 +661,5 @@ function findIntersect(){
   //*/
 }
 
-findIntersect();
+
+

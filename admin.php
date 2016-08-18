@@ -158,6 +158,9 @@
 
 	<div class="overlay"></div>
 
+	<form id="addingBackground" style="display:none;">
+
+	</form>
 
 
 

@@ -8,13 +8,15 @@ ini_set('display_startup_errors', 1);//*/
 $fileDir = "files";
 
 function getThumbnail($fileDir, $srcFile){
+
+	
 	shell_exec("convert ".$fileDir."/".$srcFile."[0] ".$fileDir."/".$srcFile.".jpg");
-	if(!is_dir($fileDir."/thumnails")){
+	if(!is_dir($fileDir."/thumbnails")){
 		mkdir($fileDir."/thumbnails", 0777);
 	}
 	if(copy($fileDir."/".$srcFile.".jpg", $fileDir."/thumbnails/".$srcFile.".jpg")){
 		unlink($fileDir."/".$srcFile.".jpg");
-	}
+	}//*/
 }
 
 if(isset($_GET['uploadfiles'])){
