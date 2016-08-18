@@ -31,8 +31,42 @@ function get_schedule ($device_id) {
 		$first_time = min ($first_time, intval ($row["startTime"]));
 		$last_time = max ($last_time, intval ($row["endTime"]));
 		switch ($row["type"]) {
+			case "user/text":
+				$type = 2;
+				break;
+			case "user/line":
+				$type = 3;
+				break;
 			case "image/jpeg":
+			case "image/png":
+			case "image/bmp":
+			case "image/gif":
 				$type = 4;
+				break;
+			case "video/avi":
+			case "video/mp4":
+			case "video/webm":
+			case "video/ogg":
+			case "video/quicktime":
+				$type = 5;
+				break;
+			case "user/background":
+				$type = 0;
+				break;
+			case "application/pdf":
+				$type = 6;
+				break;
+			case "user/timer":
+				$type = 7;
+				break;
+			case "user/stopwatch":
+				$type = 8;
+				break;
+			case "user/score":
+				$type = 9;
+				break;
+			case "user/search":
+				$type = 10;
 				break;
 			default:
 				$type = 1;
