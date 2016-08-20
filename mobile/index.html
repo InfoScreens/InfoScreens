@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>InfoScreen</title>
+        <link href="../script/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body class="text-justify">
+        <!--Шапка-->
+        <header>
+            <div class="container" style="">
+                <!--h1 class="text-center">Шапка сайта</h1-->
+                <nav class="navbar navbar-default" role="navigation">
+                    <div class="container-fluid">
+                        <!-- Brand and toggle get grouped for better mobile display -->
+                        <div class="navbar-header">
+                            <button
+                                type="button"
+                                class="navbar-toggle"
+                                data-toggle="collapse"
+                                data-target="#bs-example-navbar-collapse-1">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="#">InfoScreen</a>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <!--li class="active"><a href="#">Something</a></li-->
+                                <li>
+                                    <a href="#">Prezentation</a>
+                                </li>
+                                <li>
+                                    <a href="#">Timer</a>
+                                </li>
+                                <li>
+                                    <a href="#">Stopwatch</a>
+                                </li>
+                                <li>
+                                    <a href="#">Game's score</a>
+                                </li>
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li>
+                                    <a href="#" data-toggle="modal" data-target="#myModal">
+                                        <span class="glyphicon glyphicon-log-in"></span>
+                                        Login</a>
+                                </li>
+                                <!--button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#myModal">Log in</button-->
+
+                                <div
+                                    class="modal fade"
+                                    id="myModal"
+                                    tabindex="-1"
+                                    role="dialog"
+                                    aria-labelledby="myModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="myModalLabel">Log in</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                E-mail<input
+                                                    type="email"
+                                                    class="form-control"
+                                                    placeholder="Email address"
+                                                    required
+                                                    autofocus>
+                                                Password<input type="password" class="form-control" placeholder="Password" required>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Exit</button>
+                                                <button type="button" class="btn btn-primary">Log in</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Действие</a></li>
+            <li><a href="#">Другое действие</a></li>
+            <li><a href="#">Что-то еще</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Отдельная ссылка</a></li>
+          </ul>
+        </li-->
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </div>
+        </header>
+        <!--Основной блок-->
+        <main>
+            <div class="container">
+                <!--Ряд, блок с классом row-->
+                <div class="row">
+                    <!--Адаптивный блок article-->
+                    <article class="col-sm-12 col-md-6 col-lg-6" style="">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Prewiew</h3>
+                            </div>
+                            <div class="panel-body"></div>
+                        </div>
+                    </article>
+
+                    <!--Адаптивный блок sidebar-->
+                    <aside class="col-sm-12 col-md-4 col-lg-6">
+                        <!--Ряд, блок с классом row-->
+                        <div class="row">
+                            <!--Адаптивный блок 1-->
+                            <div class="col-sm-6 col-md-12" style="">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Prezentation</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>
+                                            <button type="button" class="btn btn-default">Previous Slide</button>
+                                            <button type="button" class="btn btn-default">Next Slide</button>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-12" style="">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Game's score</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <form>
+                                            <div>
+                                                <label><input class="form-control" type="text" placeholder="Team's name"></label>
+                                                <button type="button" class="btn btn-default">Add comand</button>
+                                            </div>
+                                            <div>
+                                                <label>
+                                                    <select class="form-control">
+                                                        <option value="one">One</option>
+                                                        <option value="two">Two</option>
+                                                        <option value="three">Three</option>
+                                                        <option value="four">Four</option>
+                                                        <option value="five">Five</option>
+                                                    </select>
+                                                </label>
+                                                <button
+                                                    class="btn btn-primary btn-xs"
+                                                    data-title="Edit"
+                                                    data-toggle="modal"
+                                                    data-target="#edit">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </button>
+                                                <button
+                                                    class="btn btn-danger btn-xs"
+                                                    data-title="Delete"
+                                                    data-toggle="modal"
+                                                    data-target="#delete">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </div>
+                                            <button type="button" class="btn btn-default">Add score</button>
+                                            <button type="button" class="btn btn-default">Substract score</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-12" style="">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Timer</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <button type="button" class="btn btn-success">Start</button>
+                                        <!--button type="button" class="btn btn-primary">Stop</button-->
+                                        <button type="button" class="btn btn-warning">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Адаптивный блок 2-->
+
+                            <div class="col-sm-6 col-md-12" style="">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Stopwatch</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <button type="button" class="btn btn-success">Start</button>
+                                        <button type="button" class="btn btn-primary">Stop</button>
+                                        <button type="button" class="btn btn-warning">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+            </div>
+        </main>
+        <!--Футер-->
+        <footer>
+            <div class="container" style=""></div>
+        </footer>
+        <script src="../script/jquery-2.2.4.min.js"></script>
+        <script src="../script/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+    </body>
+</html>
