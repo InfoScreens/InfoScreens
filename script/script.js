@@ -351,12 +351,21 @@ $("#datetimepicker").on("dp.change", function(e){
 
 //------schedule saving/downloading/updating
 
-
+function alex_time_to_unix (time) {
+  return moment (time, "YYYY-MM-DD HH:mm:00").unix ();
+}
 
 function saveItem(itemId){
   var item = items.get(itemId);
   item.mon = $("#monSelect").val();
   item.date = $("#date").val();
+
+  // convert time from string to unix timestamp
+  var item_tweak = JSON.parse (JSON.stringify (item)); // hack, copy `item`
+  item_tweak.start = alex_time_to_unix (item_tweak.start);
+  item_tweak.end = alex_time_to_unix (item_tweak.end);
+  item = item_tweak;
+
   item = JSON.stringify(item);  
   var data = new FormData();
   data.append("data", item);
