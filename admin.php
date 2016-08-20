@@ -32,6 +32,7 @@
                     </span>
                 </div>
         <button type="button" class="btn btn-default" style="width:100%;" id="openScheduleBtn" onclick="openSchedule()">Загрузить программу</button>
+		<a id="remote_control" class="btn btn-default" style="width:100%;">Remote control</a>
 		<div class="well well-sm">
 			<div class="form-group">
 				<strong id="user_name"></strong>
@@ -182,6 +183,10 @@
                 });
                 $('.selectpicker').selectpicker();
 
+				$("#monSelect").change (function () {
+					$("#remote_control")[0].href = "mobile?device_id=" + window.escape (this.value);
+				});
+
 				perform_action (
 					"get_current_user_info",
 					null,
@@ -234,6 +239,7 @@
 											);
 										}
 										container.selectpicker ("refresh");
+										container.trigger ("change");
 									}
 								}
 							);
