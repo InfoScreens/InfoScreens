@@ -59,7 +59,15 @@ switch ($method) {
 		break;
 	case "get_states":
 		$device_id = get_param ("device_id");
+		$time = intval (get_param ("time", 0));
 		$result = get_states ($device_id);
+		$temp = array ();
+		foreach ($result as $app_id => $item) {
+			if ($item["last_changed_time"] > $time) {
+				$temp[$app_id] = $item;
+			}
+		}
+		$result = $temp;
 		break;
 	default:
 		$result = "unknown method";
