@@ -83,26 +83,25 @@ function Timer () {
 		if (!state.working) {
 			set_state (true, Date.now (), state.left_time);
 			data.interval = setInterval (tick, data.tick_time, state);
+			this.display ();
 		}
-		this.display ();
 	};
 	this.stop = function () {
 		if (state.working) {
 			set_state (false, null, state.left_time - (Date.now () - state.start_time));
 			clearInterval (data.interval);
 			data.interval = null;
+			this.display ();
 		}
-		this.display ();
 	};
 	this.reset = function () {
 		this.set_time (0);
-		this.display ();
 	};
 	this.set_time = function (time_ms) {
 		if (!state.working) {
 			set_state (state.working, null, time_ms);
+			this.display ();
 		}
-		this.display ();
 	};
 	this.display = function () {
 		var d = state.left_time - (state.working ? (Date.now () - state.start_time) : 0);
