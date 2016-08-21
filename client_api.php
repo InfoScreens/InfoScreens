@@ -71,6 +71,9 @@ function get_schedule ($device_id) {
 			default:
 				$type = 1;
 		}
+		if ($row["element_type"] != 1) {
+			$type = $row["element_type"];
+		}
 		$items[] = array (
 			"item_id" => $row["itemId"],
 			"type" => $type,
@@ -81,8 +84,8 @@ function get_schedule ($device_id) {
 				$row["fileName"]
 			),
 			"position" => array (
-				"x1" => 0, "y1" => 0,
-				"x2" => 100, "y2" => 100
+				"x1" => $row["x1"], "y1" => $row["y1"],
+				"x2" => $row["x2"], "y2" => $row["y2"]
 			)
 		);
 	}
