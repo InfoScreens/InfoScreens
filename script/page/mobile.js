@@ -42,7 +42,7 @@ window.Stopwatch = (function () {
 			}
 		};
 		this.display = function () {
-			var d = state.working ? state.all_time + (Date.now () - state.start_time) : 0;
+			var d = state.all_time + state.working ? (Date.now () - state.start_time) : 0;
 			console.log ('stopwatch ' + (d / 1000).toFixed (2) + 's');
 			$("#stopwatch_time").text ((d / 1000).toFixed (2));
 		};
@@ -50,7 +50,7 @@ window.Stopwatch = (function () {
 }) ();
 
 function Timer () {
-	var net_state = new State (device_id, "stopwatch"),
+	var net_state = new State (device_id, "timer"),
 		state = {
 			working: false,
 			start_time: null,
@@ -98,7 +98,7 @@ function Timer () {
 		}
 	};
 	this.display = function () {
-		var d = state.working ? state.left_time - (Date.now () - state.start_time) : 0;
+		var d = state.left_time - state.working ? (Date.now () - state.start_time) : 0;
 		console.log ('timer ' + (d / 1000).toFixed (2) + 's');
 		$("#timer_time_input").val ((d / 1000).toFixed (2));
 	};
