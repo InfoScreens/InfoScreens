@@ -45,7 +45,7 @@ window.Stopwatch = (function () {
 			this.display ();
 		};
 		this.display = function () {
-			var d = state.all_time + state.working ? (Date.now () - state.start_time) : 0;
+			var d = state.all_time + (state.working ? (Date.now () - state.start_time) : 0);
 			console.log ('stopwatch ' + (d / 1000).toFixed (2) + 's');
 			$("#stopwatch_time").text ((d / 1000).toFixed (2));
 		};
@@ -105,7 +105,7 @@ function Timer () {
 		this.display ();
 	};
 	this.display = function () {
-		var d = state.left_time - state.working ? (Date.now () - state.start_time) : 0;
+		var d = state.left_time - (state.working ? (Date.now () - state.start_time) : 0);
 		console.log ('timer ' + (d / 1000).toFixed (2) + 's');
 		$("#timer_time_input").val ((d / 1000).toFixed (2));
 	};
