@@ -8,6 +8,34 @@
         <title>InfoScreen</title>
         <link href="../script/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="bootstrap-switch.css">
+        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.1/jsgrid.min.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.1/jsgrid.min.js"></script>
+<script>
+    var teams = [
+        //{ "Name": "Innopolis", "Score": 0}
+    ];
+
+ 
+    $("#jsGrid").jsGrid({
+        width: "100%",
+        height: "400px",
+ 
+        inserting: true,
+        editing: true,
+        sorting: true,
+        paging: true,
+ 
+        data: teams,
+ 
+        fields: [
+            { name: "Name", type: "text", width: 100, validate: "required" },
+            { name: "Score", type: "number", width: 50 },
+        
+            { type: "control" }
+        ]
+    });
+</script>
+
     </head>
     <body class="text-justify">
         <!--Шапка-->
@@ -168,9 +196,8 @@
                             </div>
                             <div class="panel-body">
                                 <div class="panel-body">
-                                    <table id="s_template" style="display: none;">
+                                    <!--table id="s_template" style="display: none;">
                                         <tr>
-                                            <!--td class="c_index"></td-->
                                             <td class="c_name"></td>
                                             <td class="c_score" id="score"></td>
                                             <td>
@@ -195,14 +222,14 @@
                                     <table class="table table-striped table-bordered s_table">
                                         <thead>
                                             <tr>
-                                                <!--th>Sr</th-->
                                                 <th>Team's Name</th>
                                                 <th>Score</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
-                                    </table>
+                                    </table-->
+                                    <div id="jsGrid"></div>
                                     <div class="">
                                         <form class="form-horizontal">
                                             <div class="form-group col-sm-4">
