@@ -325,7 +325,12 @@ if (isset ($_POST["action"])) {
 if(isset($_GET['saveItem'])){
   	$data = json_decode($_POST["data"], true);
 	include "db_connect.php";
-	$sql_query = "INSERT INTO `schedule`(`device`, `date`, `fileId`, `startTime`, `endTime`) VALUES ('".$data['mon']."', '".$data['date']."', '".$data['id']."',  '".$data['start']."', '".$data['end']."')";
+	$element_type = isset ($data["element_type"]) ? $data["element_type"] : 1;
+	$x1 = isset ($data["x1"]) ? $data["x1"] : 0;
+	$y1 = isset ($data["y1"]) ? $data["y1"] : 0;
+	$x2 = isset ($data["x2"]) ? $data["x2"] : 100;
+	$y2 = isset ($data["y2"]) ? $data["y2"] : 100;
+	$sql_query = "INSERT INTO `schedule`(`device`, `date`, `fileId`, `startTime`, `endTime`, `element_type`, `x1`, `x2`, `y1`, `y2`) VALUES ('".$data['mon']."', '".$data['date']."', '".$data['id']."',  '".$data['start']."', '".$data['end']."', '".$element_type."', '".$x1."', '".$x2."', '".$y1."', '".$y2."')";
 	$query = mysql_query($sql_query);
 	echo mysql_error();
 
