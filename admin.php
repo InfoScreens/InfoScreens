@@ -132,6 +132,12 @@
 					<input class="form-control" type="text" maxlength="2" size="2" id="endMinutes" value="00">
 				</div>		
 			</div>
+			<div class="row">
+				<label for="x1">x1<input id="x1" type="number" min="0" max="100" value="0"/></label>
+				<label for="y1">y1<input id="y1" type="number" min="0" max="100" value="0"/></label>
+				<label for="x2">x2<input id="x2" type="number" min="0" max="100" value="100"/></label>
+				<label for="y2">y2<input id="y2" type="number" min="0" max="100" value="100"/></label>
+			</div>
 			<div class="row">,
 			<button type="submit" class="btn btn-primary btn-sm btn-block" id="addItemBtn">Добавить/Add</button>
 

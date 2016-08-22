@@ -530,7 +530,12 @@ $('#addItemBtn').click( function(e){ // лoвим клик пo кнопке
     $(".add-element").before('<div class="element '+addClass(element['type'])+'" data-title="'+element["fileName"]+'"><img src="files/thumbnails/'+element["fileName"]+'.jpg"></div>');
       items.add([
         //{id:element["fileId"], content: element["fileName"], editable:true, start: start.unix (), end: end.unix ()}
-         {id:element["fileId"], content: element["fileName"], editable:true, start: start.format("YYYY-MM-DD HH:mm:00"), end:end.format("YYYY-MM-DD HH:mm:00")}
+         {id:element["fileId"], content: element["fileName"], editable:true, start: start.format("YYYY-MM-DD HH:mm:00"), end:end.format("YYYY-MM-DD HH:mm:00"),
+x1: $("#x1").val (),
+y1: $("#y1").val (),
+x2: $("#x2").val (),
+y2: $("#y2").val ()
+        }
         ]);
 
       saveItem(element["fileId"]);
