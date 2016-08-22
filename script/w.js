@@ -2,9 +2,11 @@
 function remove_item (item_id, cb) {
 	var data = new FormData ();
 	data.append ("itemId", item_id);
+	data.append ("start", 0);
+	data.append ("end", 0);
 	console.log (data);
 	$.ajax ({
-		url: '../action.php?removeItem',
+		url: '../action.php?updateSchedule',
 		method: 'POST',
 		data: data,
 		cache: false,
