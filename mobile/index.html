@@ -137,30 +137,30 @@
                                                     The upper left corner</h4>
                                                 <form class="form-inline">
                                                     <div class="form-group">
-                                                        <label for="x">X:</label>
-                                                        <input type="number" class="form-control" id="x">
+                                                        <label for="x1">X:</label>
+                                                        <input type="number" class="form-control" id="x1" value="0">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="y">Y:</label>
-                                                        <input type="number" class="form-control" id="y">
+                                                        <label for="y1">Y:</label>
+                                                        <input type="number" class="form-control" id="y1" value="0">
                                                     </div>
                                                 </form>
                                                 <h4>
                                                     The bottom right corner</h4>
                                                 <form class="form-inline">
                                                     <div class="form-group">
-                                                        <label for="x">X:</label>
-                                                        <input type="number" class="form-control" id="x">
+                                                        <label for="x2">X:</label>
+                                                        <input type="number" class="form-control" id="x2" value="100">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="y">Y:</label>
-                                                        <input type="number" class="form-control" id="y">
+                                                        <label for="y2">Y:</label>
+                                                        <input type="number" class="form-control" id="y2" value="100">
                                                     </div>
                                                 </form>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary">Save changes</button>
+                                                <button type="button" class="btn btn-primary b_z_save">Save changes</button>
                                             </div>
                                         </div>
                                     </div>
@@ -252,7 +252,7 @@
                             <div class="col-sm-6 col-md-12" style="">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        <h3 class="panel-title">Timer</h3>
+                                        <h3 class="panel-title">Timer <input type="checkbox" id="timer_z" /></h3>
                                     </div>
                                     <div class="panel-body">
                                         <label style="display: block;"><input id="timer_time_input" class="form-control" type="number" min="0"/></label>
@@ -267,7 +267,7 @@
                             <div class="col-sm-6 col-md-12" style="">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        <h3 class="panel-title">Stopwatch</h3>
+                                        <h3 class="panel-title">Stopwatch <input type="checkbox" id="stopwatch_z" /></h3>
                                     </div>
                                     <div class="panel-body">
                                         <label id="stopwatch_time" style="display: block;"></label>
@@ -290,6 +290,7 @@
         <script src="../script/jquery-2.2.4.min.js"></script>
         <script src="../script/state.js"></script>
         <script src="../script/URI.js"></script>
+        <script src="../script/w.js"></script>
         <script src="../script/page/mobile.js"></script>
         <script src="../script/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="bootstrap-switch.js"></script>
